@@ -61,6 +61,7 @@ if [[ -f "./config.json" ]]; then
     readBoolean "A configuration exists. Would you like to override? (Y/n)" OVERRIDE
 fi
 
+
 if [[ "$OVERRIDE" == "n" ]]; then
     echo "Skipping configuration setup..."
     exit 0;
@@ -73,8 +74,6 @@ readNumber $'What port should I listen on? (Default 8080)\n' APP_PORT 8080
 readNumber $'Which GPIO pin is temperature sensor on?\n' GPIO_PIN
 readNumber $'How many seconds between temperature checks? (Default 5)\n' INTERVAL_SECS 5
 readNumber $'How many seconds between heat call checks? (Default 2)\n' HEAT_INTERVAL_SECS 2
-readNumber $'What is the threshold that heating system should run (in F)? (Default 68)\n' HEAT_THRESHOLD 68
-readNumber $'What is the threshold that cooling system should run (in F)? (Default 82)\n' COOL_THRESHOLD 82
 
 JSON_CONFIG="{
     \"zoneName\": \"${ZONE_NAME}\",
@@ -95,6 +94,8 @@ THERMOSTAT_CONFIG="{
 writeFile "./config.json" "$JSON_CONFIG"
 
 ./setup-controllers.sh
+
+mkdir -p ./server/database/
 
 writeFile "./server/database/settings.json" "$THERMOSTAT_CONFIG"
 
