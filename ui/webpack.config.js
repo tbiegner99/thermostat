@@ -1,5 +1,8 @@
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const TerserJsPlugin = require('terser-webpack-plugin');
 
 module.exports = {
   devtool: 'source-map',
@@ -10,7 +13,10 @@ module.exports = {
     path: path.resolve(__dirname, 'build'),
     publicPath: '/',
   },
-
+  optimization: {
+    minimize: true,
+    minimizer: [new TerserJsPlugin({}), new OptimizeCssAssetsPlugin({})],
+  },
   devServer: {
     hot: true,
     port: 8000,
@@ -19,7 +25,7 @@ module.exports = {
       '/api': 'http://localhost:8080',
     },
   },
-  plugins: [new HtmlWebpackPlugin()],
+  plugins: [new HtmlWebpackPlugin(), new MiniCssExtractPlugin()],
   module: {
     rules: [
       {
@@ -34,7 +40,7 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          'style-loader',
+          MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
