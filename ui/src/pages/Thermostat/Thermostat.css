@@ -1,0 +1,42 @@
+body {
+  margin: 0;
+}
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  padding: 15px;
+}
+.heading {
+  text-align: center;
+
+  font-size: 9vh;
+}
+.mainContent {
+  height: 90vh;
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+}
+
+.temperature {
+  width: 40vw;
+}
+
+.controlHeader {
+  font-weight: bold;
+  font-size: 30px;
+}
+.controlHeaders {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+.controlHeaders > * {
+  width: 33%;
+}
+.controls,
+.controlHeaders {
+  width: 60vw;
+}

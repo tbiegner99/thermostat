@@ -1,0 +1,11 @@
+.temperatureDisplay {
+  font-size: 80px;
+}
+.temperature,
+.humidity {
+  text-align: center;
+}
+
+.humidity {
+  font-size: 50%;
+}

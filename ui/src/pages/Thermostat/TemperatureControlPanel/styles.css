@@ -1,0 +1,16 @@
+.controlPanel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.controlPanel > * {
+  width: 33%;
+  display: flex;
+  justify-content: center;
+}
+
+.controlHeader {
+  font-weight: bold;
+  font-size: 30px;
+}

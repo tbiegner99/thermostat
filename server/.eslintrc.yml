@@ -1,0 +1,5 @@
+extends: ['airbnb', 'prettier']
+rules:
+  class-methods-use-this: 0
+  no-console: 0
+  no-plusplus: 0

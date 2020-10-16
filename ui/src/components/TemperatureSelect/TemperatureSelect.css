@@ -1,0 +1,24 @@
+.temperatureSelect {
+  display: flex;
+  flex-direction: column;
+  font-size: 35px;
+  width: 100px;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+.arrow {
+  font-size: 120%;
+  padding: 10px;
+  cursor: pointer;
+}
+.temperatureSelect {
+  user-select: none;
+}
+.disabled {
+  color: grey;
+  opacity: 0.6;
+}
+.arrow.disabled {
+  cursor: not-allowed;
+}

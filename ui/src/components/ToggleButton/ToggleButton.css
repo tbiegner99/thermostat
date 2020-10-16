@@ -1,0 +1,76 @@
+* {
+  box-sizing: border-box;
+}
+.toggleButton {
+  height: 30px;
+  width: 100px;
+  position: relative;
+}
+.toggleButton.disabled {
+  opacity: 0.5;
+  transition: all ease-in-out 0.5s;
+}
+.disabled .bar {
+  cursor: not-allowed;
+}
+.bar {
+  display: flex;
+  height: 100%;
+  cursor: pointer;
+}
+.bar > * {
+  background: grey;
+  height: 100%;
+  transition: all ease-in-out 0.5s;
+  position: relative;
+  border-style: solid;
+  border-color: black;
+  border-width: 1px 0px 1px 0px;
+}
+.on .bar > * {
+  background: green;
+}
+.on .middle > div {
+  left: 0;
+}
+.middle > div {
+  left: 30px;
+  position: absolute;
+  transition: all ease-in-out 0.5s;
+}
+.middle {
+  width: 60px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  transition: all ease-in-out 0.5s;
+}
+.leftEnd {
+  width: 15px;
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+  border-left-width: 1px;
+}
+.rightEnd {
+  width: 15px;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  border-right-width: 1px;
+}
+
+.toggleButton .toggle {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  border-radius: 50%;
+  border: 1px solid black;
+  height: 100%;
+  width: 30px;
+  background: white;
+  transition: all ease-in-out 0.5s;
+}
+
+.toggleButton.on .toggle {
+  left: 60px;
+}
