@@ -124,12 +124,14 @@ class HeatingService {
   disableHeatingOverride() {
     if (this.heatingController) {
       this.heatingController.override = false;
+      this.performCheck();
     }
   }
 
   disableCoolingOverride() {
     if (this.coolingController) {
       this.coolingController.override = false;
+      this.performCheck();
     }
   }
 }
