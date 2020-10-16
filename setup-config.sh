@@ -47,7 +47,7 @@ writeFile() {
     JSON_CONFIG=$2
     JSON_FILE=$1
     TMP_FILE="$1.tmp"
-    if [[ -f "$JSON_FILE"]]; then
+    if [[ -f "$JSON_FILE" ]]; then
         SCRIPT="console.log(JSON.stringify(Object.assign(require('${JSON_FILE}'),${JSON_CONFIG}),undefined,4))"
         node -e "$SCRIPT" > $TMP_FILE
         rm $JSON_FILE
