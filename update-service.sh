@@ -9,3 +9,5 @@ cd ../ui
 npm i
 npm run build
 cp ./build/* /var/www
+
+sudo reboot
