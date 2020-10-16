@@ -9,3 +9,12 @@
 .humidity {
   font-size: 50%;
 }
+
+.systemStatus {
+  display: flex;
+  justify-content: center;
+  font-size: 65%;
+}
+.status {
+  padding: 10px;
+}

@@ -9,20 +9,26 @@ class ThermostatController extends React.Component {
     this.loadStatus = this.loadStatus.bind(this);
   }
   async componentDidMount() {
-    this.intervalId = setInterval(this.loadStatus, 5000);
+    this.currentConditionsInterval = setInterval(this.loadConditions, 5000);
+    this.statusInterval = setInterval(this.loadStatus, 2000);
     this.loadStatus();
+    this.loadConditions();
     try {
       ThermostatActionCreator.getThresholds();
     } catch (err) {}
   }
   componentWillUnmount() {
-    clearInterval(this.intervalId);
+    clearInterval(this.currentConditionsInterval);
+    clearInterval(this.statusInterval);
   }
 
-  async loadStatus() {
+  async loadConditions() {
     try {
       await ThermostatActionCreator.getCurrentConditions();
     } catch (err) {}
+  }
+
+  async loadStatus() {
     try {
       await ThermostatActionCreator.getSystemStatus();
     } catch (err) {}

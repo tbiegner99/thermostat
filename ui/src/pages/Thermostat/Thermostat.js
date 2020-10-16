@@ -15,6 +15,8 @@ export default (props) => {
           temperature={props.temperature}
           humidity={props.humidity}
           unit={props.unit}
+          heatingSystemStatus={props.heatingSystemStatus}
+          coolingSystemStatus={props.coolingSystemStatus}
           displayUnit={props.displayUnit}
         />
         <div>

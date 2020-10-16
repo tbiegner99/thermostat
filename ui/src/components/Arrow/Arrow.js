@@ -1,13 +1,7 @@
 import React from 'react';
-import fa from '@fortawesome/fontawesome-free/css/all.css';
+import { Arrow } from '../icons/Icons';
 import combineClasses from 'classnames';
 import styles from './Arrow.css';
-const Arrow = (props) => (
-  <div
-    {...props}
-    className={combineClasses(fa.fas, fa['fa-caret-square-up'], props.className)}
-  ></div>
-);
 
 const UpArrow = (props) => (
   <Arrow {...props} className={combineClasses(styles.up, props.className)} />
