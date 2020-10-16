@@ -93,6 +93,9 @@ THERMOSTAT_CONFIG="{
 }"
 
 writeFile "./config.json" "$JSON_CONFIG"
+
+./setup-controllers.sh
+
 writeFile "./server/database/settings.json" "$THERMOSTAT_CONFIG"
 
 chmod 777 config.json 
