@@ -43,6 +43,20 @@ readBoolean() {
     done
 }
 
+writeFile() {
+    JSON_CONFIG=$2
+    JSON_FILE=$1
+    TMP_FILE="$1.tmp"
+    if [[ -f "./config.json" ]]; then
+        SCRIPT="console.log(JSON.stringify(Object.assign(require('${JSON_FILE}'),${JSON_CONFIG}),undefined,4))"
+        node -e "$SCRIPT" > $TMP_FILE
+        rm $JSON_FILE
+        mv $TMP_FILE $JSON_FILE
+    else 
+        node -e "console.log(JSON.stringify(${JSON_CONFIG},undefined,4))" > $JSON_FILE
+    fi
+}
+
 if [[ -f "./config.json" ]]; then
     readBoolean "A configuration exists. Would you like to override? (Y/n)" OVERRIDE
 fi
@@ -59,6 +73,9 @@ readNumber $'What port should I listen on? (Default 8080)\n' APP_PORT 8080
 readNumber $'Which GPIO pin is temperature sensor on?\n' GPIO_PIN
 readNumber $'How many seconds between temperature checks? (Default 5)\n' INTERVAL_SECS 5
 readNumber $'How many seconds between heat call checks? (Default 2)\n' HEAT_INTERVAL_SECS 2
+readNumber $'What is the threshold that heating system should run (in F)? (Default 68)\n' HEAT_THRESHOLD 68
+readNumber $'What is the threshold that cooling system should run (in F)? (Default 82)\n' COOL_THRESHOLD 82
+
 JSON_CONFIG="{
     \"zoneName\": \"${ZONE_NAME}\",
     \"zoneDescription\": \"${ZONE_DESC}\",
@@ -69,11 +86,13 @@ JSON_CONFIG="{
     \"checkIntervalInSeconds\": $((HEAT_INTERVAL_SECS ))
 }"
 
-if [[ -f "./config.json" ]]; then
-    node -e "console.log(JSON.stringify(Object.assign(require('./config.json'),${JSON_CONFIG}),undefined,4))" > config_new.json
-    rm config.json
-    mv config_new.json config.json
-else 
-    node -e "console.log(JSON.stringify(${JSON_CONFIG},undefined,4))" > config.json
-fi
+THERMOSTAT_CONFIG="{
+    \"coolingThreshold\": 5/9*(${COOL_THRESHOLD}-32),
+    \"heatThreshold\": 5/9*(${HEAT_THRESHOLD}-32),
+    \"margin\": 1
+}"
+
+writeFile "./config.json" "$JSON_CONFIG"
+writeFile "./server/database/settings.json" "$THERMOSTAT_CONFIG"
+
 chmod 777 config.json 
