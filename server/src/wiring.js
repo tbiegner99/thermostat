@@ -1,9 +1,9 @@
-const awilix = require("awilix");
-const fs = require("fs");
-const path = require("path");
-const { CurrentConditionsManager } = require("@tjb/temperature-sensor");
-const HeatingControllerFactory = require("./services/heatingControllers/HeatingControllerFactory");
-const SETTINGS_FILE = path.resolve(__dirname, "../database/settings.json");
+const awilix = require('awilix');
+const fs = require('fs');
+const path = require('path');
+const { CurrentConditionsManager } = require('@tbiegner99/temperature-sensor');
+const HeatingControllerFactory = require('./services/heatingControllers/HeatingControllerFactory');
+const SETTINGS_FILE = path.resolve(__dirname, '../database/settings.json');
 
 const container = awilix.createContainer({
   injectionMode: awilix.InjectionMode.PROXY,
@@ -16,14 +16,15 @@ const setup = (config) => {
   });
   const fileContents = fs.readFileSync(SETTINGS_FILE);
   const thresholds = JSON.parse(fileContents);
+  console.log('Starting temperature thresholds', thresholds);
   container.loadModules(
     [
-      path.resolve(__dirname, "./controllers/**/*.js"),
-      path.resolve(__dirname, "./datasource/**/*.js"),
-      path.resolve(__dirname, "./services/**/*.js"),
+      path.resolve(__dirname, './controllers/**/*.js'),
+      path.resolve(__dirname, './datasource/**/*.js'),
+      path.resolve(__dirname, './services/**/*.js'),
     ],
     {
-      formatName: "camelCase",
+      formatName: 'camelCase',
       resolverOptions: {
         lifetime: awilix.Lifetime.SINGLETON,
         register: awilix.asClass,

@@ -1,14 +1,15 @@
-const rpio = require("rpio");
-const HeatingController = require("./HeatingController");
+const rpio = require('rpio');
+const HeatingController = require('./HeatingController');
 
 class GPIOHeatingController extends HeatingController {
   constructor({ pin, invertLogic }) {
     super();
-    this.pinNumber = pin;
-    this.invertLogic = invertLogic;
+    this.pinNumber = Number.parseInt(pin, 10);
+    this.invertLogic =
+      typeof invertLogic === 'string' ? invertLogic === 'true' : Boolean(invertLogic);
     this.on = false;
-    rpio.init({ mapping: "gpio" });
-    rpio.open(pin, rpio.OUTPUT, this.getState(this.on));
+    rpio.init({ mapping: 'gpio' });
+    rpio.open(this.pinNumber, rpio.OUTPUT, this.getState(this.on));
   }
 
   getState(on) {
@@ -27,7 +28,7 @@ class GPIOHeatingController extends HeatingController {
 
   turnOn() {
     this.on = true;
-    console.log("turning on pin " + this.pinNumber);
+    console.log(`turning on pin ${this.pinNumber}`);
     this.updatePinState();
   }
 
