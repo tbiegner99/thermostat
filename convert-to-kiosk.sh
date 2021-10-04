@@ -12,6 +12,7 @@ echo "chromium-browser  --noerrdialogs --check-for-update-interval=31536000 --di
 cat  /etc/xdg/openbox/autostart
 
 echo "export KIOSK_URL=http://127.0.0.1/thermostat">>/etc/xdg/openbox/environment
-touch ~/.bash_profile
-echo '[[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && startx -- -nocursor' >> ~/.bash_profile
-source ~/.bash_profile && reboot
+
+touch /home/pi/.bash_profile
+echo '[[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && startx -- -nocursor' >> /home/pi/.bash_profile
+source /home/pi/.bash_profile && reboot
