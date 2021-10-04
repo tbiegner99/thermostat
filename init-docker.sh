@@ -1,12 +1,4 @@
 #!/bin/bash
-mkdir -p database
-rm -f database/settings.json
-
-echo '{
-    "margin": 0.6,
-    "heatThreshold": 15,
-    "coolingThreshold": 30
-}' > database/settings.json
 
 #docker setup
 sudo apt-get update && sudo apt-get upgrade
