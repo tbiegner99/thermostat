@@ -28,9 +28,9 @@ WORKDIR /srv/package
 COPY ./src ./src
 COPY ./package.json ./
 RUN mkdir -p database
-RUN echo '{
-    "margin": 0.6,
-    "heatThreshold": 15,
-    "coolingThreshold": 30
+RUN echo -e '{
+    "margin": 0.6, \n\
+    "heatThreshold": 15,\n\
+    "coolingThreshold": 30\n\
 }' > database/settings.json
 CMD rm -rf /var/run/pigpio.pid && npm run start
