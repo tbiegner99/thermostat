@@ -13,5 +13,5 @@ cat  /etc/xdg/openbox/autostart
 
 echo "export KIOSK_URL=http://127.0.0.1/thermostat">>/etc/xdg/openbox/environment
 touch ~/.bash_profile
-echo "[[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && startx -- -nocursor" >> ~/.bash_profile
+echo '[[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && startx -- -nocursor' >> ~/.bash_profile
 source ~/.bash_profile && reboot
