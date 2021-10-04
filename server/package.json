@@ -1,6 +1,6 @@
 {
   "name": "@tbiegner99/thermostat",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Server backend for raspberry pi thermostat",
   "main": "app.js",
   "scripts": {
