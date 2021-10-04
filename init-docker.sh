@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #docker setup
-sudo apt-get update && sudo apt-get upgrade
+sudo apt-get update -y && sudo apt-get upgrade -y
 curl -sSL https://get.docker.com | sh
 sudo usermod -aG docker pi
 su - pi
