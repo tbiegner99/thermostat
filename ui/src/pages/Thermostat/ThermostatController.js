@@ -11,11 +11,12 @@ class ThermostatController extends React.Component {
   }
 
   async componentDidMount() {
-    this.currentConditionsInterval = setInterval(this.loadConditions, 5000);
-    this.statusInterval = setInterval(this.loadStatus, 2000);
+    this.loadThresholds();
     this.loadStatus();
     this.loadConditions();
-    this.loadThresholds();
+
+    this.currentConditionsInterval = setInterval(this.loadConditions, 5000);
+    this.statusInterval = setInterval(this.loadStatus, 2000);
   }
 
   componentWillUnmount() {
