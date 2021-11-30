@@ -33,7 +33,10 @@ class ThermostatController extends React.Component {
         await new Promise((resolve) => setTimeout(resolve, 2000));
         await this.loadThresholds();
       }
-    } catch (err) {}
+    } catch (err) {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await this.loadThresholds();
+    }
   }
 
   async loadConditions() {
