@@ -30,6 +30,7 @@ class ThermostatController extends React.Component {
         Number.isNaN(thresholds.heatingThreshold.value) ||
         Number.isNaN(thresholds.coolingThreshold.value)
       ) {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
         await this.loadThresholds();
       }
     } catch (err) {}
