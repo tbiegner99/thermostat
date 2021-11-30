@@ -9,7 +9,7 @@ module.exports = {
   devtool: 'source-map',
   entry: './src/pages/App.js',
   output: {
-    filename: '[name].bundle.js',
+    filename: '[name].[contenthash].bundle.js',
 
     path: path.resolve(__dirname, 'build'),
     publicPath: '/',
