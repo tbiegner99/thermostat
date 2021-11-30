@@ -1,30 +1,43 @@
 import React from 'react';
-import styles from './ToggleButton.css';
 import combineClasses from 'classnames';
+import styles from './ToggleButton.css';
 
-export default (props) => {
-  const text = props.on ? 'On' : 'Off';
-  const fireChange = () => {
-    if (!props.disabled && typeof props.onChange === 'function') {
-      props.onChange(!props.on);
+class ToggleButton extends React.Component {
+  constructor(props) {
+    super(props);
+    this.fireChange = this.fireChange.bind(this);
+  }
+
+  fireChange() {
+    const { disabled, onChange, on } = this.props;
+    if (!disabled && typeof onChange === 'function') {
+      onChange(!on);
     }
-  };
-  return (
-    <div
-      className={combineClasses(styles.toggleButton, props.className, {
-        [styles.on]: props.on,
-        [styles.disabled]: props.disabled,
-      })}
-      onClick={fireChange}
-    >
-      <div className={styles.bar}>
-        <span className={styles.leftEnd} />
-        <span className={styles.middle}>
-          <div>{text}</div>
-        </span>
-        <span className={styles.rightEnd} />
+  }
+
+  render() {
+    const { disabled, className, on } = this.props;
+    const text = on ? 'On' : 'Off';
+
+    return (
+      // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+      <div
+        className={combineClasses(styles.toggleButton, className, {
+          [styles.on]: on,
+          [styles.disabled]: disabled,
+        })}
+        onClick={this.fireChange}
+      >
+        <div className={styles.bar}>
+          <span className={styles.leftEnd} />
+          <span className={styles.middle}>
+            <div>{text}</div>
+          </span>
+          <span className={styles.rightEnd} />
+        </div>
+        <div className={styles.toggle} />
       </div>
-      <div className={styles.toggle} />
-    </div>
-  );
-};
+    );
+  }
+}
+export default ToggleButton;

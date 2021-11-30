@@ -5,6 +5,7 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserJsPlugin = require('terser-webpack-plugin');
 
 module.exports = {
+  mode: 'production',
   devtool: 'source-map',
   entry: './src/pages/App.js',
   output: {
@@ -22,7 +23,7 @@ module.exports = {
     port: 8000,
     historyApiFallback: true,
     proxy: {
-      '/api': 'http://localhost:8080',
+      '/api': process.env.API_TARGET || 'http://localhost:8080',
     },
   },
   plugins: [new HtmlWebpackPlugin(), new MiniCssExtractPlugin()],

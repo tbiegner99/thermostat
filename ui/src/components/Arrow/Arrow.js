@@ -1,6 +1,7 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import { Arrow } from '../icons/Icons';
 import combineClasses from 'classnames';
+import { Arrow } from '../icons/Icons';
 import styles from './Arrow.css';
 
 const UpArrow = (props) => (
