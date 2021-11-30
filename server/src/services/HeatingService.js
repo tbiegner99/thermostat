@@ -1,17 +1,12 @@
 class HeatingService {
-  constructor({
-    thresholds,
-    currentConditionsManager,
-    coolingController,
-    heatingController,
-  }) {
+  constructor({ thresholds, currentConditionsManager, coolingController, heatingController }) {
     this.coolingController = coolingController;
     this.heatingController = heatingController;
     this.currentConditionsManager = currentConditionsManager;
     this.thresholds = thresholds;
 
     this.performCheck = this.performCheck.bind(this);
-    process.on("exit", () => {
+    process.on('exit', () => {
       if (this.coolingController) {
         this.coolingController.turnOff();
       }
@@ -53,16 +48,14 @@ class HeatingService {
       return;
     }
     const { margin = 0, heatThreshold } = this.thresholds;
-    const {
-      temperature,
-    } = this.currentConditionsManager.getCurrentTemperature();
+    const { temperature } = this.currentConditionsManager.getCurrentTemperature();
     if (this.heatingController.isOn()) {
       if (temperature > heatThreshold + margin) {
-        console.log("turning off heat");
+        console.log('turning off heat');
         this.heatingController.turnOff();
       }
-    } else if (temperature < heatThreshold) {
-      console.log("turning on heat");
+    } else if (temperature < heatThreshold - margin) {
+      console.log('turning on heat');
       this.heatingController.turnOn();
     }
   }
@@ -72,16 +65,14 @@ class HeatingService {
       return;
     }
     const { margin = 0, coolingThreshold } = this.thresholds;
-    const {
-      temperature,
-    } = this.currentConditionsManager.getCurrentTemperature();
+    const { temperature } = this.currentConditionsManager.getCurrentTemperature();
     if (this.coolingController.isOn()) {
       if (temperature < coolingThreshold - margin) {
-        console.log("turning off AC");
+        console.log('turning off AC');
         this.coolingController.turnOff();
       }
-    } else if (temperature > coolingThreshold) {
-      console.log("turning on AC");
+    } else if (temperature > coolingThreshold + margin) {
+      console.log('turning on AC');
       this.coolingController.turnOn();
     }
   }
@@ -90,12 +81,12 @@ class HeatingService {
     try {
       this.handleHeating();
     } catch (err) {
-      console.error("Error processing heating", err);
+      console.error('Error processing heating', err);
     }
     try {
       this.handleCooling();
     } catch (err) {
-      console.error("Error processing cooling", err);
+      console.error('Error processing cooling', err);
     }
   }
 

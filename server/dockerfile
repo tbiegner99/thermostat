@@ -1,13 +1,36 @@
 FROM node:14 as build
 
-
+RUN wget https://github.com/joan2937/pigpio/archive/master.zip
+RUN unzip master.zip
+WORKDIR /pigpio-master
+RUN make install
+WORKDIR /
 COPY ./package-lock.json ./
 COPY ./package.json ./
 RUN npm ci
 
 FROM node:14
-USER node
-COPY ./src ./src
 COPY --from=build ./node_modules /srv/package/node_modules
+RUN wget https://github.com/joan2937/pigpio/archive/master.zip
+RUN unzip master.zip
+WORKDIR /pigpio-master
+RUN make install
+RUN apt-get update
+RUN apt-get install -y vim
+# create gpio permission
+#997 is raspbian gpio group id
+RUN groupadd --gid 997 gpio
+RUN usermod -a -G gpio node
 
-CMD npm run start
+USER root
+WORKDIR /srv/package
+
+COPY ./src ./src
+COPY ./package.json ./
+RUN mkdir -p ./database
+RUN echo -e '{\
+    "margin": 0.6, \n\
+    "heatThreshold": 15,\n\
+    "coolingThreshold": 30\n\
+}' > ./database/settings.json
+CMD rm -rf /var/run/pigpio.pid && npm run start

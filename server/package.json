@@ -1,6 +1,6 @@
 {
-  "name": "@tjb/thermostat",
-  "version": "1.0.0",
+  "name": "@tbiegner99/thermostat",
+  "version": "1.0.1",
   "description": "Server backend for raspberry pi thermostat",
   "main": "app.js",
   "scripts": {
@@ -10,9 +10,9 @@
   "author": "TJ Biegner",
   "license": "ISC",
   "dependencies": {
-    "@tjb/temperature-sensor": "file:../../temperature-sensor/server",
+    "@tbiegner99/temperature-sensor": "^1.0.4",
     "awilix": "^4.2.6",
-    "axios": "^0.20.0",
+    "axios": "^0.22.0",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "node-getopt": "^0.3.2",
