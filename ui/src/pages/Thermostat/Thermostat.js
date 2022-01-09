@@ -15,20 +15,20 @@ export default (props) => {
           temperature={props.temperature}
           humidity={props.humidity}
           unit={props.unit}
-          heatingSystemStatus={props.heatingSystemStatus}
-          coolingSystemStatus={props.coolingSystemStatus}
+          isHeatOn={props.isHeatOn}
+          isCoolingOn={props.isCoolingOn}
           displayUnit={props.displayUnit}
         />
         <div>
           <section className={styles.controlHeaders}>
-            <div></div>
+            <div />
             <div className={styles.controlHeader}>Control</div>
             <div className={styles.controlHeader}>Override</div>
           </section>
           <section className={styles.controls}>
-            {props.heatingSystemStatus && (
+            {props.isHeatingSystemEnabled && (
               <TemperatureControlPanel
-                override={props.heatingOverride}
+                override={props.isHeatingOverrideEnabled}
                 onOverride={props.onHeatingOverrideChange}
                 onThresholdChange={props.onHeatingThresholdChange}
                 temperature={props.heatingThreshold}
@@ -38,13 +38,12 @@ export default (props) => {
                 minTemperature={HeatingLimits.min}
                 displayUnit={props.displayUnit}
                 onOverrideToggle={props.onHeatingOverride}
-                override={props.heatingSystemStatus.overrideEnabled}
               />
             )}
 
-            {props.coolingSystemStatus && (
+            {props.isCoolingSystemEnabled && (
               <TemperatureControlPanel
-                override={props.coolingOverride}
+                override={props.isCoolingOverrideEnabled}
                 temperature={props.coolingThreshold}
                 title="Cooling"
                 onOverride={props.onCoolingOverrideChange}
@@ -54,7 +53,6 @@ export default (props) => {
                 minTemperature={CoolingLimits.min}
                 displayUnit={props.displayUnit}
                 onOverrideToggle={props.onCoolingOverride}
-                override={props.coolingSystemStatus.overrideEnabled}
               />
             )}
           </section>

@@ -3,23 +3,41 @@ import { connect } from 'react-redux';
 import { Temperature } from '../../util/constants/Units';
 import Thermostat from './Thermostat';
 import ThermostatActionCreator from '../../actionCreators/ThermostatActionCreator';
+
 class ThermostatController extends React.Component {
   constructor(props) {
     super(props);
     this.loadStatus = this.loadStatus.bind(this);
   }
+
   async componentDidMount() {
-    this.currentConditionsInterval = setInterval(this.loadConditions, 5000);
-    this.statusInterval = setInterval(this.loadStatus, 2000);
+    this.loadThresholds();
     this.loadStatus();
     this.loadConditions();
-    try {
-      ThermostatActionCreator.getThresholds();
-    } catch (err) {}
+
+    this.currentConditionsInterval = setInterval(this.loadConditions, 5000);
+    this.statusInterval = setInterval(this.loadStatus, 2000);
   }
+
   componentWillUnmount() {
     clearInterval(this.currentConditionsInterval);
     clearInterval(this.statusInterval);
+  }
+
+  async loadThresholds() {
+    try {
+      const thresholds = await ThermostatActionCreator.getThresholds();
+      if (
+        Number.isNaN(thresholds.heatingThreshold.value) ||
+        Number.isNaN(thresholds.coolingThreshold.value)
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await this.loadThresholds();
+      }
+    } catch (err) {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await this.loadThresholds();
+    }
   }
 
   async loadConditions() {
@@ -35,7 +53,42 @@ class ThermostatController extends React.Component {
   }
 
   render() {
-    return <Thermostat {...this.props} />;
+    const {
+      onHeatingThresholdChange,
+      onCoolingThresholdChange,
+      onCoolingOverride,
+      onHeatingOverride,
+      unit,
+      temperature,
+      humidity,
+      zoneName,
+      coolingThreshold,
+      heatingThreshold,
+      displayUnit,
+      coolingSystemStatus,
+      heatingSystemStatus,
+    } = this.props;
+    return (
+      <Thermostat
+        onHeatingThresholdChange={onHeatingThresholdChange}
+        onCoolingThresholdChange={onCoolingThresholdChange}
+        onCoolingOverride={onCoolingOverride}
+        onHeatingOverride={onHeatingOverride}
+        unit={unit}
+        temperature={temperature}
+        humidity={humidity}
+        zoneName={zoneName}
+        coolingThreshold={coolingThreshold}
+        heatingThreshold={heatingThreshold}
+        displayUnit={displayUnit}
+        isHeatingSystemEnabled={Boolean(coolingSystemStatus)}
+        isCoolingSystemEnabled={Boolean(heatingSystemStatus)}
+        isCoolingOverrideEnabled={coolingSystemStatus && coolingSystemStatus.overrideEnabled}
+        isHeatingOverrideEnabled={heatingSystemStatus && heatingSystemStatus.overrideEnabled}
+        isHeatOn={heatingSystemStatus && heatingSystemStatus.on}
+        isCoolingOn={coolingSystemStatus && coolingSystemStatus.on}
+      />
+    );
   }
 }
 
