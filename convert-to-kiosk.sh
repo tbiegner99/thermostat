@@ -16,4 +16,6 @@ echo "export KIOSK_URL=http://127.0.0.1/thermostat">>/etc/xdg/openbox/environmen
 touch /home/pi/.bash_profile
 echo '[[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && startx -- -nocursor' >> /home/pi/.bash_profile
 source /home/pi/.bash_profile 
+chown pi /home/pi/.bash_profile
+chmod 777 /home/pi/.bash_profile
 reboot
