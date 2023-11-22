@@ -5,6 +5,8 @@ const {
 } = require('@tbiegner99/temperature-sensor');
 const Getopt = require('node-getopt');
 const Environment = require('./Environment');
+const path = require('path');
+const fs = require('fs').promises;
 const { setup, container } = require('./wiring');
 
 async function run() {
@@ -19,7 +21,9 @@ async function run() {
     config = Environment.loadConfig();
     console.warn('Config file not passed. Using config from environment: ', config);
   } else {
-    config = require(options.config); // eslint-disable-line import/no-dynamic-require
+    var data = await fs.readFile(path.resolve(process.cwd(), options.config), { encoding: 'utf8' }); // eslint-disable-line import/no-dynamic-require
+    console.log(data);
+    config = JSON.parse(data);
   }
 
   setup(config);

@@ -1,5 +1,5 @@
 import React from 'react';
-import fa from '@fortawesome/fontawesome-free/css/all.css';
+import fa from '@fortawesome/fontawesome-free/css/all.min.css';
 import combineClasses from 'classnames';
 
 const createIconComponent = (...classes) => (props) => (

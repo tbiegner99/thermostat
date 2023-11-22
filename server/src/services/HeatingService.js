@@ -19,8 +19,8 @@ class HeatingService {
 
   getControllerStatus(controller) {
     return {
-      on: controller.isOn(),
-      overrideEnabled: controller.override,
+      on: controller?.isOn(),
+      overrideEnabled: controller?.override,
     };
   }
 

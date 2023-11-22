@@ -1,8 +1,6 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const TerserJsPlugin = require('terser-webpack-plugin');
 
 module.exports = {
   mode: 'production',
@@ -14,14 +12,17 @@ module.exports = {
     path: path.resolve(__dirname, 'build'),
     publicPath: '/',
   },
-  optimization: {
-    minimize: true,
-    minimizer: [new TerserJsPlugin({}), new OptimizeCssAssetsPlugin({})],
-  },
+
   devServer: {
     hot: true,
     port: 8000,
     historyApiFallback: true,
+    client: {
+      overlay: {
+        warnings: false,
+        errors: true,
+      },
+    },
     proxy: {
       '/api': process.env.API_TARGET || 'http://localhost:8080',
     },
@@ -32,11 +33,11 @@ module.exports = {
       {
         test: /\.(jsx?)$/,
         exclude: /node_modules/,
-        use: 'babel-loader',
+        use: { loader: 'babel-loader' },
       },
       {
         test: /\.(png|jpe?g|gif|svg|eot|woff2?|ttf)$/i,
-        use: 'file-loader',
+        use: { loader: 'file-loader' },
       },
       {
         test: /\.css$/,
