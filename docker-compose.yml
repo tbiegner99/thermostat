@@ -10,6 +10,10 @@ services:
       - ./server/database/settings.json:/srv/package/database/settings.json
     devices:
       - /dev/gpiomem:/dev/gpiomem
+    logging:
+      options:
+        max-size: "20m"
+        max-file: "10"
     environment:
       - "ZONE_NAME=Living Room"
       - "ZONE_DESCRIPTION=Living Room"
@@ -40,6 +44,10 @@ services:
       - ./ui/docker_nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - thermostat
+    logging:
+      options:
+        max-size: "20m"
+        max-file: "10"
     ports:
       - 80:80
     # command: tail --follow /etc/nginx/nginx.conf
