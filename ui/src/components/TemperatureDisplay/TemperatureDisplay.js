@@ -18,7 +18,7 @@ export default (props) => {
         <SystemStatus on={props.isHeatOn}>
           <Fire />
         </SystemStatus>
-        <SystemStatus status={props.isCoolingOn}>
+        <SystemStatus on={props.isCoolingOn}>
           <Snow />
         </SystemStatus>
       </div>
