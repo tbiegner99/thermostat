@@ -76,6 +76,26 @@ readNumber $'How many seconds between temperature checks? (Default 5)\n' INTERVA
 readNumber $'How many seconds between heat call checks? (Default 2)\n' HEAT_INTERVAL_SECS 2
 readNumber $'What is the threshold that heating system should run (in F)? (Default 68)\n' HEAT_THRESHOLD 68
 readNumber $'What is the threshold that cooling system should run (in F)? (Default 82)\n' COOL_THRESHOLD 82
+readBoolean $'Would you like to report readings to kafka? (Y/n)\n' USE_KAFKA
+
+
+if [[ "$USE_KAFKA" == "Y" ]]; then
+    readRequired  $'What is the topic to report to?\n' KAFKA_TOPIC
+    readRequired  $'What is the address of the broker to report to?\n' KAFKA_BROKER
+    readNumber $'How often in seconds would you like to send data? (Default 60)\n' KAFKA_INTERVAL 60
+    KAFKA_CONFIG=",
+        \"kafka\": {
+            \"topic\":\"${KAFKA_TOPIC}\",
+            \"brokers\": [ \"${KAFKA_BROKER}\" ],
+            \"reportingInterval\": ${KAFKA_INTERVAL}
+        }
+    "
+fi
+
+if [[ "$OVERRIDE" == "n" ]]; then
+    echo "Skipping configuration setup..."
+    exit 0;
+fi
 
 JSON_CONFIG="{
     \"zoneName\": \"${ZONE_NAME}\",
@@ -84,7 +104,7 @@ JSON_CONFIG="{
     \"appPort\": ${APP_PORT},
     \"temperatureSensorPin\": ${GPIO_PIN},
     \"temperatureReportIntervalInSeconds\": $((INTERVAL_SECS )),
-    \"checkIntervalInSeconds\": $((HEAT_INTERVAL_SECS ))
+    \"checkIntervalInSeconds\": $((HEAT_INTERVAL_SECS ))${KAFKA_CONFIG}
 }"
 
 THERMOSTAT_CONFIG="{

@@ -11,9 +11,25 @@ class Environment {
       temperatureReportIntervalInSeconds:
         Number.parseInt(process.env.REPORT_INTERVAL_SECONDS, 10) || 60,
       checkIntervalInSeconds: Number.parseInt(process.env.CHECK_INTERVAL_SECONDS, 10) || 5,
+      ...Environment.loadKafkaConfig(),
       controllers: {
         heating: heatingController,
         cooling: coolingController,
+      },
+    };
+  }
+
+  static loadKafkaConfig(type) {
+    if (process.env.USE_KAFKA !== 'true') {
+      return {};
+    }
+    var interval = Number.parseInt(process.env.KAFKA_INTERVAL);
+    console.log(process.env.KAFKA_BROKERS);
+    return {
+      kafka: {
+        topic: process.env.KAFKA_TOPIC,
+        brokers: process.env.KAFKA_BROKERS.split(','),
+        reportingInterval: Number.isNaN(interval) ? 60 : interval,
       },
     };
   }

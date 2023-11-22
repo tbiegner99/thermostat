@@ -1,0 +1,21 @@
+{
+  "zoneName": "LR",
+  "zoneDescription": "",
+  "contextRoot": "/api",
+  "appPort": 8080,
+  "temperatureSensorPin": 2,
+  "temperatureReportIntervalInSeconds": 5,
+  "checkIntervalInSeconds": 2,
+  "controllers": {
+    "heating": {
+      "type": "gpio",
+      "pin": 19,
+      "invertedLogic": false
+    },
+    "cooling": {
+      "type": "gpio",
+      "pin": 13,
+      "invertedLogic": false
+    }
+  }
+}

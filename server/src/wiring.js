@@ -5,8 +5,6 @@ const { CurrentConditionsManager } = require('@tbiegner99/temperature-sensor');
 const HeatingControllerFactory = require('./services/heatingControllers/HeatingControllerFactory');
 const SETTINGS_FILE = path.resolve(__dirname, '../database/settings.json');
 
-console.l
-
 const container = awilix.createContainer({
   injectionMode: awilix.InjectionMode.PROXY,
 });
