@@ -22,7 +22,7 @@ async function run() {
     console.warn('Config file not passed. Using config from environment: ', config);
   } else {
     var data = await fs.readFile(path.resolve(process.cwd(), options.config), { encoding: 'utf8' }); // eslint-disable-line import/no-dynamic-require
-    console.log(data);
+
     config = JSON.parse(data);
   }
 
@@ -60,6 +60,7 @@ async function run() {
     contextRoot: config.contextRoot,
     reporters: await ConfigProcessor.getReporters({ reporters }),
   };
+  console.log(appConfig);
   const heatingService = container.resolve('heatingService');
 
   setInterval(heatingService.performCheck, config.checkIntervalInSeconds * 1000);
