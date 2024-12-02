@@ -16,13 +16,13 @@ class ThermostatDatasource {
     return serializer.fromThresholdsResponse(response);
   }
 
-  async updateHeatingThreshold(threshold) {
+  async updateHeatingThreshold(threshold: number) {
     const request = serializer.toUpdateHeatingThresholdRequest(threshold);
     const response = await httpClient.put(`${THRESHOLDS_URL}/heating`, request);
     return serializer.fromThresholdsResponse(response);
   }
 
-  async updateCoolingThreshold(threshold) {
+  async updateCoolingThreshold(threshold: number) {
     const request = serializer.toUpdateCoolingThresholdRequest(threshold);
     const response = await httpClient.put(`${THRESHOLDS_URL}/cooling`, request);
     return serializer.fromThresholdsResponse(response);
@@ -32,7 +32,7 @@ class ThermostatDatasource {
     const response = await httpClient.get(SYSTEM_URL);
     return serializer.fromSystemStatusResponse(response);
   }
-  async controlOverride(system, enabled) {
+  async controlOverride(system: string, enabled: boolean) {
     const func = enabled ? 'on' : 'off';
     const response = await httpClient.put(`${SYSTEM_URL}/${system}/override/${func}`);
     return serializer.fromSystemStatusResponse(response);

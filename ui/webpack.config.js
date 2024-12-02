@@ -1,11 +1,10 @@
 const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'production',
   devtool: 'source-map',
-  entry: './src/pages/App.js',
+  entry: './src/pages/App.tsx',
   output: {
     filename: '[name].[contenthash].bundle.js',
 
@@ -23,13 +22,25 @@ module.exports = {
         errors: true,
       },
     },
-    proxy: {
-      '/api': process.env.API_TARGET || 'http://localhost:8080',
-    },
+    proxy: [
+      {
+        context: ['/api'],
+        target: process.env.API_TARGET || 'http://localhost:8080',
+      },
+    ],
   },
-  plugins: [new HtmlWebpackPlugin(), new MiniCssExtractPlugin()],
+  plugins: [new HtmlWebpackPlugin()],
+  resolve: {
+    symlinks: false,
+    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
+  },
   module: {
     rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
       {
         test: /\.(jsx?)$/,
         exclude: /node_modules/,
@@ -42,12 +53,13 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          MiniCssExtractPlugin.loader,
+          'style-loader',
           {
             loader: 'css-loader',
             options: {
               modules: {
-                localIdentName: '[path][name]_[local]',
+                namedExport: false,
+                localIdentName: '[path][name]__[local]',
               },
             },
           },

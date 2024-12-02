@@ -53,7 +53,7 @@ class ThermostatStore extends AbstractReducingStore {
     return this.data.heatingSystemStatus;
   }
 
-  handleEvent(action) {
+  handleEvent(action: { type: string; data: any }) {
     switch (action.type) {
       case ThermostatActions.CURRENT_CONDITIONS_LOADED:
         this.data.zoneName = action.data.zoneName;

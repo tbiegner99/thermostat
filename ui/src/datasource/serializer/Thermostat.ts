@@ -1,5 +1,5 @@
 import { Temperature } from '../../util/constants/Units';
-const mapUnit = (tempUnit) => {
+const mapUnit = (tempUnit: string) => {
   switch (tempUnit) {
     case 'F':
       return Temperature.FARENHEIT;
@@ -12,14 +12,14 @@ const mapUnit = (tempUnit) => {
   }
 };
 
-const format = (number) => {
+const format = (number: number) => {
   if (number) {
     return number.toFixed(1);
   }
   return number;
 };
 
-const fromSystemComponent = (data) => {
+const fromSystemComponent = (data: any) => {
   if (!data) return null;
   return {
     on: data.on,
@@ -27,12 +27,12 @@ const fromSystemComponent = (data) => {
   };
 };
 
-const fromSystemStatusResponse = (response) => ({
+const fromSystemStatusResponse = (response: any) => ({
   heating: fromSystemComponent(response.data.heating),
   cooling: fromSystemComponent(response.data.cooling),
 });
 
-const fromCurrentConditionsResponse = (response) => {
+const fromCurrentConditionsResponse = (response: any) => {
   const { humidity, temperature, zoneName, zoneDescription } = response.data;
   return {
     zoneName,
@@ -48,7 +48,7 @@ const fromCurrentConditionsResponse = (response) => {
   };
 };
 
-const fromThresholdsResponse = (response) => {
+const fromThresholdsResponse = (response: any) => {
   const { heatThreshold, coolingThreshold } = response.data;
   return {
     heatingThreshold: {
@@ -62,11 +62,11 @@ const fromThresholdsResponse = (response) => {
   };
 };
 
-const toUpdateCoolingThresholdRequest = (threshold) => ({
+const toUpdateCoolingThresholdRequest = (threshold: any) => ({
   coolingThreshold: threshold,
 });
 
-const toUpdateHeatingThresholdRequest = (threshold) => ({
+const toUpdateHeatingThresholdRequest = (threshold: any) => ({
   heatThreshold: threshold,
 });
 

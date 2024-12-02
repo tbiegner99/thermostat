@@ -36,6 +36,12 @@ body {
 .controlHeaders > * {
   width: 33%;
 }
+.controls {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap:20px;
+}
 .controls,
 .controlHeaders {
   width: 60vw;

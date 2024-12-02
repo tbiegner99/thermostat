@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 class DispatcherFactory {
-  static setDispatchingStrategy(dispatcher) {
+  static _dispatcher: any = null;
+  static setDispatchingStrategy(dispatcher: any) {
     DispatcherFactory._dispatcher = dispatcher;
   }
 
@@ -8,7 +9,7 @@ class DispatcherFactory {
     return DispatcherFactory._dispatcher;
   }
 
-  static dispatch(action) {
+  static dispatch(action: any) {
     DispatcherFactory.dispatcher.dispatch(action);
   }
 }

@@ -13,7 +13,7 @@ class ApplicationStore extends AbstractReducingStore {
     return this.data.currentUrl;
   }
 
-  handleEvent(action) {
+  handleEvent(action: { type: string; data: any }) {
     switch (action.type) {
       case ApplicationActions.URL_CHANGED:
         this.data.currentUrl = action.data.url;

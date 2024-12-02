@@ -6,7 +6,7 @@ export default () => (
   <Router>
     <main>
       <Routes>
-        <Route exact path="/thermostat" element={<Thermostat />} />
+        <Route path="/thermostat" element={<Thermostat />} />
         <Route path="*" element={<Navigate to="/thermostat" />} />
       </Routes>
     </main>

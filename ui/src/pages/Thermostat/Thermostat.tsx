@@ -1,11 +1,32 @@
 import React from 'react';
 import { Temperature } from '../../util/constants/Units';
 import { HeatingLimits, CoolingLimits } from '../../util/constants/TemperatureLimits';
-import styles from './Thermostat.css';
+import styles from './Thermostat.module.css';
 import TemperatureDisplay from '../../components/TemperatureDisplay/TemperatureDisplay';
 import TemperatureControlPanel from './TemperatureControlPanel/TemperatureControlPanel';
 
-export default (props) => {
+export interface ThermostatProps {
+  zoneName: string;
+  temperature: number;
+  humidity: number;
+  unit: string;
+  isHeatOn: boolean;
+  isCoolingOn: boolean;
+  displayUnit: string;
+  isHeatingSystemEnabled: boolean;
+  isCoolingSystemEnabled: boolean;
+  isHeatingOverrideEnabled: boolean;
+  isCoolingOverrideEnabled: boolean;
+  heatingThreshold: number;
+  coolingThreshold: number;
+
+  onHeatingThresholdChange: (temperature: number) => void;
+  onCoolingThresholdChange: (temperature: number) => void;
+  onHeatingOverride: (enabled: boolean) => void;
+  onCoolingOverride: (enabled: boolean) => void;
+}
+
+export default (props: ThermostatProps) => {
   return (
     <section className={styles.page}>
       <section className={styles.heading}>{props.zoneName}</section>
@@ -29,7 +50,6 @@ export default (props) => {
             {props.isHeatingSystemEnabled && (
               <TemperatureControlPanel
                 override={props.isHeatingOverrideEnabled}
-                onOverride={props.onHeatingOverrideChange}
                 onThresholdChange={props.onHeatingThresholdChange}
                 temperature={props.heatingThreshold}
                 unit={Temperature.CELCIUS}
@@ -46,7 +66,6 @@ export default (props) => {
                 override={props.isCoolingOverrideEnabled}
                 temperature={props.coolingThreshold}
                 title="Cooling"
-                onOverride={props.onCoolingOverrideChange}
                 onThresholdChange={props.onCoolingThresholdChange}
                 unit={Temperature.CELCIUS}
                 maxTemperature={CoolingLimits.max}

@@ -2,13 +2,23 @@ import React from 'react';
 import combineClasses from 'classnames';
 import { Fire, Snow } from '../icons/Icons';
 
-import styles from './TemperatureDisplay.css';
+import styles from './TemperatureDisplay.module.css';
 import TemperatureConverter from '../../util/unitConverter/TemperatureConverter';
 
-const SystemStatus = (props) =>
+const SystemStatus = (props: { on: boolean; children: React.ReactNode }) =>
   props.on ? <div className={styles.status}>{props.children}</div> : null;
 
-export default (props) => {
+interface TemperatureDisplayProps {
+  temperature: number;
+  humidity: number;
+  unit: string;
+  displayUnit: string;
+  isHeatOn: boolean;
+  isCoolingOn: boolean;
+  className?: string;
+}
+
+export default (props: TemperatureDisplayProps) => {
   const temperature = new TemperatureConverter(props.temperature, props.unit).toUnit(
     props.displayUnit
   );
@@ -16,10 +26,10 @@ export default (props) => {
     <div className={combineClasses(styles.temperatureDisplay, props.className)}>
       <div className={styles.systemStatus}>
         <SystemStatus on={props.isHeatOn}>
-          <Fire />
+          <Fire className={styles.statusIcon} />
         </SystemStatus>
         <SystemStatus on={props.isCoolingOn}>
-          <Snow />
+          <Snow className={styles.statusIcon} />
         </SystemStatus>
       </div>
       <section className={styles.temperature}>
