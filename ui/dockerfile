@@ -9,7 +9,7 @@ COPY ./src ./src
 COPY ./babel.config.js ./
 COPY ./webpack.config.js ./
 COPY ./tsconfig.json ./
-RUN npm run build
+RUN NODE_OPTIONS=--max_old_space_size=4096 npm run build
 
 FROM nginx
 COPY --from=build ./build /srv/package/thermostat_ui
