@@ -8,6 +8,7 @@ RUN npm ci
 COPY ./src ./src
 COPY ./babel.config.js ./
 COPY ./webpack.config.js ./
+COPY ./tsconfig.json ./
 RUN npm run build
 
 FROM nginx
