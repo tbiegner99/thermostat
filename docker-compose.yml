@@ -2,6 +2,7 @@ version: "3.3"
 services:
   thermostat:
     image: tbiegner99/thermostat-backend
+    platform: linux/arm64
     restart: always
     container_name: thermostat
     privileged: true
@@ -19,7 +20,7 @@ services:
       - "ZONE_DESCRIPTION=Living Room"
       - CONTEXT_ROOT=/api
       - APP_PORT=8080
-      - TEMPERATURE_SENSOR_PIN=2
+      - TEMPERATURE_SENSOR_PIN=3
       - REPORT_INTERVAL_SECONDS=15
       - CHECK_INTERVAL_SECONDS=5
       - HEATING_CONTROLLER_TYPE=gpio
@@ -37,7 +38,8 @@ services:
     # command: node
     # tty: true
   ui:
-    image: docker.io/tbiegner99/thermostat-ui
+    image: tbiegner99/thermostat-ui
+    platform: linux/arm64
     restart: always
     container_name: ui
     volumes:
