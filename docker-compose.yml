@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   thermostat:
-    build: ./server
+    image: tbiegner99/thermostat-backend
     restart: always
     container_name: thermostat
     privileged: true
@@ -37,7 +37,7 @@ services:
     # command: node
     # tty: true
   ui:
-    build: ./ui
+    image: docker.io/tbiegner99/thermostat-ui
     restart: always
     container_name: ui
     volumes:
