@@ -1,4 +1,5 @@
-FROM node:16
+# this needs to be node 18 because node library doesnt work with newer version
+FROM node:18
 RUN wget https://github.com/joan2937/pigpio/archive/master.zip
 RUN unzip master.zip
 
