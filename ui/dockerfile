@@ -1,4 +1,4 @@
-FROM node:22 as build
+FROM node:22 AS build
 
 
 COPY ./package-lock.json ./
@@ -10,7 +10,7 @@ COPY ./babel.config.js ./
 COPY ./webpack.config.js ./
 COPY ./tsconfig.json ./
 COPY ./Globals.d.ts ./
-RUN NODE_OPTIONS=--max_old_space_size=2048 npm run build
+RUN npm run build
 
 FROM nginx
 COPY --from=build ./build /srv/package/thermostat_ui
