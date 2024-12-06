@@ -1,5 +1,7 @@
 #! /bin/bash
-PWD=`pwd`
+set -x
+
+PWD=$1
 
 node $PWD/check-health.js
 
