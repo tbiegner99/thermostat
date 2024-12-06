@@ -1,12 +1,7 @@
 #! /bin/bash
 PWD=`pwd`
 
-node $PWD/check-health.js
-
-if [ $? -eq 0 ]; then
-  echo "Command succeeded"
-
-else
-  echo "Helthcheck failed rebooting"
-  reboot
-fi
+sudo rm -f /etc/cron.d/monitor-thermostat
+sudo touch /etc/cron.d/monitor-thermostat
+sudo echo "*/1 * * * * root $PWD/check-health.sh" > /etc/cron.d/monitor-thermostat
+sudo chmod 600 /etc/cron.d/monitor-thermostat
