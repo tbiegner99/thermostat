@@ -1,6 +1,6 @@
 async function checkHealth() {
   try {
-    const healthCheck = await fetch("http://heating.local/api/health");
+    const healthCheck = await fetch("http://localhost/api/health");
     //fail if the health check fails
     if (healthCheck.status !== 200) {
       console.log("Health check failed with status " + healthCheck.status);
