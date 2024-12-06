@@ -9,7 +9,6 @@ async function checkHealth() {
     //fail if last temperature collection is older than 5 minutes
     const responseBody = await healthCheck.json();
 
-    console.log(responseBody);
     const now = new Date().valueOf();
     const lastUpdate = Date.parse(responseBody.lastUpdate);
     if (now - lastUpdate > 5 * 60 * 1000) {
