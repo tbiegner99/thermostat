@@ -7,6 +7,6 @@ if [ $? -eq 0 ]; then
   echo "Command succeeded"
 
 else
-  echo "Helthcheck failed rebooting"
+  echo "Healthcheck failed rebooting"
   reboot
 fi
