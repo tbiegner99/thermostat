@@ -1,5 +1,4 @@
 async function checkHealth() {
-  process.exit(-1);
   try {
     const healthCheck = await fetch("http://localhost/api/health");
     //fail if the health check fails
