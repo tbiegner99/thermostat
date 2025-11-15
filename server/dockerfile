@@ -15,14 +15,18 @@ RUN usermod -a -G gpio node
 USER root
 WORKDIR /srv/package
 
-COPY ./src ./src
 COPY ./package-lock.json ./
 COPY ./package.json ./
+COPY ./tsconfig.json ./
 RUN npm ci
+COPY ./src ./src
+RUN npm run build
+COPY ./dist ./
+
 RUN mkdir -p ./database
 RUN echo -e '{\
     "margin": 0.6, \n\
     "heatThreshold": 15,\n\
     "coolingThreshold": 30\n\
-}' > ./database/settings.json
+    }' > ./database/settings.json
 CMD rm -rf /var/run/pigpio.pid && npm run start

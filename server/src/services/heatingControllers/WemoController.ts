@@ -1,20 +1,29 @@
-const axios = require("axios");
-const { parseStringPromise } = require("xml2js");
-const HeatingController = require("./HeatingController");
+import HeatingController from './HeatingController';
+const axios = require('axios');
+const { parseStringPromise } = require('xml2js');
+
+interface WemoControllerConfig {
+  host: string;
+  port: string | number;
+}
 
 class WemoController extends HeatingController {
-  constructor({ host, port }) {
+  private host: string;
+  private port: string | number;
+  private on: boolean = false;
+
+  constructor({ host, port }: WemoControllerConfig) {
     super();
     this.host = host;
     this.port = port;
     this.on = false;
   }
 
-  isOn() {
+  override isOn(): boolean {
     return this.on;
   }
 
-  getSetStateRequest(state) {
+  private getSetStateRequest(state: boolean): string {
     return `<?xml version="1.0"?>
     <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
         <s:Body>
@@ -29,9 +38,9 @@ class WemoController extends HeatingController {
     `;
   }
 
-  async executeSoapRequest(request) {
+  private async executeSoapRequest(request: string): Promise<any> {
     const headers = {
-      "Content-Type": "text/xml",
+      'Content-Type': 'text/xml',
       SOAPAction: '"urn:Belkin:service:basicevent1:1#SetBinaryState"',
     };
     const url = `http://${this.host}:${this.port}/upnp/control/basicevent1`;
@@ -41,17 +50,17 @@ class WemoController extends HeatingController {
     return parseStringPromise(response.data);
   }
 
-  getBinaryStateFromResponse(parsedResponse) {
+  private getBinaryStateFromResponse(parsedResponse: any): number {
     const state =
-      parsedResponse["s:Envelope"]["s:Body"][0]["u:SetBinaryStateResponse"][0]
+      parsedResponse['s:Envelope']['s:Body'][0]['u:SetBinaryStateResponse'][0]
         .BinaryState[0];
     return Number(state);
   }
 
-  async turnOn() {
+  override async turnOn(): Promise<void> {
     try {
       if (this.on) {
-        return; // this will thrrow error otherwise
+        return; // this will throw error otherwise
       }
       const parsedResponse = await this.executeSoapRequest(
         this.getSetStateRequest(true)
@@ -59,14 +68,14 @@ class WemoController extends HeatingController {
       const binaryState = this.getBinaryStateFromResponse(parsedResponse);
       this.on = Number.isNaN(binaryState) ? true : Boolean(binaryState);
     } catch (err) {
-      console.error("Failed to turn on wemo", err);
+      console.error('Failed to turn on wemo', err);
     }
   }
 
-  async turnOff() {
+  override async turnOff(): Promise<void> {
     try {
       if (!this.on) {
-        return; // this will thrrow error otherwise
+        return; // this will throw error otherwise
       }
       const parsedResponse = await this.executeSoapRequest(
         this.getSetStateRequest(false)
@@ -74,9 +83,9 @@ class WemoController extends HeatingController {
       const binaryState = this.getBinaryStateFromResponse(parsedResponse);
       this.on = Number.isNaN(binaryState) ? false : Boolean(binaryState);
     } catch (err) {
-      console.error("Failed to turn on wemo", err);
+      console.error('Failed to turn off wemo', err);
     }
   }
 }
 
-module.exports = WemoController;
+export = WemoController;

@@ -1,20 +1,23 @@
-const awilix = require('awilix');
-const fs = require('fs');
-const path = require('path');
+import * as awilix from 'awilix';
+import * as fs from 'fs';
+import * as path from 'path';
+import Environment, { Config } from './Environment';
+import HeatingControllerFactory from './services/heatingControllers/HeatingControllerFactory';
+
 const { CurrentConditionsManager } = require('@tbiegner99/temperature-sensor');
-const HeatingControllerFactory = require('./services/heatingControllers/HeatingControllerFactory');
+
 const SETTINGS_FILE = path.resolve(__dirname, '../database/settings.json');
 
-const container = awilix.createContainer({
+export const container = awilix.createContainer({
   injectionMode: awilix.InjectionMode.PROXY,
 });
 
-const setup = (config) => {
+export const setup = (config: Config): void => {
   CurrentConditionsManager.setZoneInfo({
     zoneName: config.zoneName,
     zoneDescription: config.zoneDescription,
   });
-  const fileContents = fs.readFileSync(SETTINGS_FILE);
+  const fileContents = fs.readFileSync(SETTINGS_FILE, 'utf8');
   const thresholds = JSON.parse(fileContents);
   console.log('Starting temperature thresholds', thresholds);
   container.loadModules(
@@ -31,10 +34,14 @@ const setup = (config) => {
       },
     }
   );
-  const { controllers = {} } = config;
+  const { controllers } = config;
   const controllerFactory = new HeatingControllerFactory();
-  const heatingController = controllerFactory.fromConfig(controllers.heating);
-  const coolingController = controllerFactory.fromConfig(controllers.cooling);
+  const heatingController = controllers?.heating
+    ? controllerFactory.fromConfig(controllers.heating)
+    : null;
+  const coolingController = controllers?.cooling
+    ? controllerFactory.fromConfig(controllers.cooling)
+    : null;
 
   container.register({
     fs: awilix.asValue(fs.promises),
@@ -45,5 +52,3 @@ const setup = (config) => {
     coolingController: awilix.asValue(coolingController),
   });
 };
-
-module.exports = { setup, container };

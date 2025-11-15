@@ -1,10 +1,19 @@
+import HeatingController from './HeatingController';
 const rpio = require('rpio');
-const HeatingController = require('./HeatingController');
+
+interface GPIOHeatingControllerConfig {
+  pin: string | number;
+  invertLogic?: string | boolean;
+}
 
 class GPIOHeatingController extends HeatingController {
-  constructor({ pin, invertLogic }) {
+  private pinNumber: number;
+  private invertLogic: boolean;
+  private on: boolean = false;
+
+  constructor({ pin, invertLogic }: GPIOHeatingControllerConfig) {
     super();
-    this.pinNumber = Number.parseInt(pin, 10);
+    this.pinNumber = Number.parseInt(pin.toString(), 10);
     this.invertLogic =
       typeof invertLogic === 'string' ? invertLogic === 'true' : Boolean(invertLogic);
     this.on = false;
@@ -12,30 +21,30 @@ class GPIOHeatingController extends HeatingController {
     rpio.open(this.pinNumber, rpio.OUTPUT, this.getState(this.on));
   }
 
-  getState(on) {
+  private getState(on: boolean): number {
     const value = this.invertLogic ? !on : on;
     const pinState = value ? rpio.HIGH : rpio.LOW;
     return pinState;
   }
 
-  updatePinState() {
+  private updatePinState(): void {
     rpio.write(this.pinNumber, this.getState(this.on));
   }
 
-  isOn() {
+  override isOn(): boolean {
     return this.on;
   }
 
-  turnOn() {
+  override turnOn(): void {
     this.on = true;
     console.log(`turning on pin ${this.pinNumber}`);
     this.updatePinState();
   }
 
-  turnOff() {
+  override turnOff(): void {
     this.on = false;
     this.updatePinState();
   }
 }
 
-module.exports = GPIOHeatingController;
+export = GPIOHeatingController;
