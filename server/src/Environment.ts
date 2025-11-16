@@ -9,6 +9,14 @@ interface KafkaConfig {
   reportingInterval: number;
 }
 
+interface MqttConfig {
+  brokerUrl: string;
+  username?: string;
+  password?: string;
+  clientId?: string;
+  baseTopic: string;
+}
+
 export interface Config {
   zoneName: string;
   zoneDescription: string;
@@ -18,6 +26,7 @@ export interface Config {
   temperatureReportIntervalInSeconds: number;
   checkIntervalInSeconds: number;
   kafka?: KafkaConfig;
+  mqtt?: MqttConfig;
   controllers: {
     heating: ControllerConfig;
     cooling: ControllerConfig;
@@ -40,6 +49,7 @@ class Environment {
       ),
       checkIntervalInSeconds: Number.parseInt(process.env.CHECK_INTERVAL_SECONDS || '5', 10),
       ...Environment.loadKafkaConfig(),
+      ...Environment.loadMqttConfig(),
       controllers: {
         heating: heatingController,
         cooling: coolingController,
@@ -58,6 +68,23 @@ class Environment {
         topic: process.env.KAFKA_TOPIC || '',
         brokers: process.env.KAFKA_BROKERS?.split(',') || [],
         reportingInterval: Number.isNaN(interval) ? 60 : interval,
+      },
+    };
+  }
+
+  static loadMqttConfig(): { mqtt?: MqttConfig } {
+    if (process.env.USE_MQTT !== 'true') {
+      return {};
+    }
+    return {
+      mqtt: {
+        brokerUrl: process.env.MQTT_BROKER_URL || 'mqtt://localhost:1883',
+        username: process.env.MQTT_USERNAME,
+        password: process.env.MQTT_PASSWORD,
+        clientId: process.env.MQTT_CLIENT_ID,
+        baseTopic:
+          process.env.MQTT_BASE_TOPIC ||
+          `thermostat/${process.env.ZONE_NAME?.toLowerCase().replace(/\s+/g, '-') || 'default'}`,
       },
     };
   }

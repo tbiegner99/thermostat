@@ -1,3 +1,7 @@
+import EventEmitter from 'events';
+
+import { MQTT_EVENTS } from '../constants/MqttEvents';
+
 interface Controller {
   isOn(): boolean;
   turnOn(): void;
@@ -27,7 +31,7 @@ interface HeatingServiceDependencies {
   currentConditionsManager: CurrentConditionsManager;
   coolingController?: Controller;
   heatingController?: Controller;
-  //   stateNotifier: StateNotifier;
+  events?: EventEmitter;
 }
 
 interface ControllerStatus {
@@ -45,23 +49,28 @@ export class HeatingService {
   private heatingController?: Controller;
   private currentConditionsManager: CurrentConditionsManager;
   private thresholds: Thresholds;
+  private events?: EventEmitter;
   public mode: Mode = Mode.AUTO;
-  // private stateNotifier: StateNotifier;
 
   constructor({
     thresholds,
     currentConditionsManager,
     coolingController,
     heatingController,
-  }: // stateNotifier,
-  HeatingServiceDependencies) {
+    events,
+  }: HeatingServiceDependencies) {
     this.coolingController = coolingController;
     this.heatingController = heatingController;
     this.currentConditionsManager = currentConditionsManager;
     this.thresholds = thresholds;
-    //this.stateNotifier = stateNotifier;
+    this.events = events;
 
     this.performCheck = this.performCheck.bind(this);
+
+    // Setup MQTT handlers if MQTT service is available
+    if (this.events) {
+      this.setupMqttHandlers();
+    }
     process.on('exit', () => {
       if (this.coolingController) {
         this.coolingController.turnOff();
@@ -70,6 +79,65 @@ export class HeatingService {
       if (this.heatingController) {
         this.heatingController.turnOff();
       }
+    });
+  }
+
+  private setupMqttHandlers(): void {
+    if (!this.events) return;
+
+    console.log('Setting up MQTT handlers for HeatingService');
+
+    // Handle mode changes from Home Assistant
+    this.events.on(MQTT_EVENTS.SET_MODE, (mode: string) => {
+      console.log(`MQTT: Setting mode to ${mode}`);
+      this.setMode(mode as Mode);
+    });
+
+    // Handle single temperature commands (fallback)
+    this.events.on(MQTT_EVENTS.SET_TEMPERATURE, (temperature: number) => {
+      console.log(`MQTT: Setting temperature to ${temperature}°C`);
+      if (this.mode === Mode.HEATING) {
+        this.setHeatingThreshold(temperature);
+      } else if (this.mode === Mode.COOLING) {
+        this.setCoolingThreshold(temperature);
+      }
+    });
+
+    // Handle dual setpoint commands
+    this.events.on(MQTT_EVENTS.SET_HEATING_THRESHOLD, (temperature: number) => {
+      console.log(`MQTT: Setting heating threshold to ${temperature}°C`);
+      this.thresholds.heatThreshold = temperature;
+    });
+
+    this.events.on(MQTT_EVENTS.SET_COOLING_THRESHOLD, (temperature: number) => {
+      console.log(`MQTT: Setting cooling threshold to ${temperature}°C`);
+      this.thresholds.coolingThreshold = temperature;
+    });
+
+    // Handle manual override commands
+    this.events.on(MQTT_EVENTS.SET_HEATING, (enable: boolean) => {
+      console.log(`MQTT: Setting heating override to ${enable}`);
+      this.mode = Mode.HEATING;
+      this.performCheck();
+    });
+
+    // Handle manual override commands
+    this.events.on(MQTT_EVENTS.TURN_ON, (enable: boolean) => {
+      console.log(`MQTT: Setting heating override to ${enable}`);
+      this.mode = Mode.AUTO;
+      this.performCheck();
+    });
+
+    this.events.on(MQTT_EVENTS.TURN_OFF, (enable: boolean) => {
+      console.log(`MQTT: Setting heating override to ${enable}`);
+      this.mode = Mode.OFF;
+      this.performCheck();
+    });
+
+    this.events.on(MQTT_EVENTS.SET_COOLING, (enable: boolean) => {
+      console.log(`MQTT: Setting cooling override to ${enable}`);
+      this.mode = Mode.COOLING;
+      this.performCheck();
     });
   }
 
@@ -89,14 +157,23 @@ export class HeatingService {
 
   setHeatingThreshold(threshold: number): void {
     this.thresholds.heatThreshold = threshold;
+    this.events?.emit(MQTT_EVENTS.HEATING_THRESHOLD_UPDATED, {
+      value: threshold,
+    });
   }
 
   setCoolingThreshold(threshold: number): void {
     this.thresholds.coolingThreshold = threshold;
+    this.events?.emit(MQTT_EVENTS.COOLING_THRESHOLD_UPDATED, {
+      value: threshold,
+    });
   }
 
   setMargin(margin: number): void {
     this.thresholds.margin = margin;
+    this.events?.emit(MQTT_EVENTS.MARGIN_UPDATED, {
+      value: margin,
+    });
   }
 
   setMode(mode: Mode): void {

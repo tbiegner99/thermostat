@@ -16,7 +16,7 @@ interface ThresholdServiceDependencies {
   heatingService: HeatingService;
 }
 
-class ThresholdService {
+export class ThresholdService {
   private thresholdDao: ThresholdDatasource;
   private heatingService: HeatingService;
 
@@ -44,5 +44,3 @@ class ThresholdService {
     this.heatingService.setCoolingThreshold(coolingThreshold);
   }
 }
-
-export = ThresholdService;

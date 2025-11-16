@@ -3,8 +3,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import Environment, { Config } from './Environment';
 import HeatingControllerFactory from './services/heatingControllers/HeatingControllerFactory';
-
-const { CurrentConditionsManager } = require('@tbiegner99/temperature-sensor');
+import { MqttThermostatService } from './services/MqttThermostatService';
+import { EventEmitter } from 'events';
+import { CurrentConditionsManager } from '@tbiegner99/temperature-sensor';
 
 const SETTINGS_FILE = path.resolve(__dirname, '../database/settings.json');
 
@@ -19,7 +20,10 @@ export const setup = (config: Config): void => {
   });
   const fileContents = fs.readFileSync(SETTINGS_FILE, 'utf8');
   const thresholds = JSON.parse(fileContents);
+  const events = new EventEmitter();
+  CurrentConditionsManager.setEmitter(events);
   console.log('Starting temperature thresholds', thresholds);
+
   container.loadModules(
     [
       path.resolve(__dirname, './controllers/**/*.js'),
@@ -43,6 +47,13 @@ export const setup = (config: Config): void => {
     ? controllerFactory.fromConfig(controllers.cooling)
     : null;
 
+  // Create MQTT service if configured
+  let mqttService: MqttThermostatService | null = null;
+  if (config.mqtt) {
+    console.log('Initializing MQTT service with config:', config.mqtt);
+    mqttService = new MqttThermostatService(config.mqtt);
+  }
+
   container.register({
     fs: awilix.asValue(fs.promises),
     currentConditionsManager: awilix.asValue(CurrentConditionsManager),
@@ -50,5 +61,6 @@ export const setup = (config: Config): void => {
     thresholds: awilix.asValue(thresholds),
     heatingController: awilix.asValue(heatingController),
     coolingController: awilix.asValue(coolingController),
+    events: awilix.asValue(events),
   });
 };
