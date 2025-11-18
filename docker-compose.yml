@@ -1,8 +1,8 @@
 version: "3.3"
 services:
   thermostat:
-    # image: tbiegner99/thermostat-backend:v1.3.0
-    build: ./server
+    image: tbiegner99/thermostat-backend:v1.4.0
+    # build: ./server
     platform: linux/arm64
     restart: always
     container_name: thermostat
