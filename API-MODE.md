@@ -5,11 +5,13 @@
 Sets the operating mode of the thermostat.
 
 ### Endpoint
+
 ```
 PUT /api/thresholds/mode
 ```
 
 ### Request Body
+
 ```json
 {
   "mode": "auto"
@@ -17,12 +19,14 @@ PUT /api/thresholds/mode
 ```
 
 ### Valid Mode Values
+
 - `"auto"` - Automatic heating/cooling based on thresholds
 - `"heat"` - Heating only mode
-- `"cool"` - Cooling only mode  
+- `"cool"` - Cooling only mode
 - `"off"` - Thermostat disabled
 
 ### Response
+
 Returns the updated threshold settings including the new mode:
 
 ```json
@@ -35,13 +39,16 @@ Returns the updated threshold settings including the new mode:
 ```
 
 ### Error Responses
-- **400 Bad Request**: 
+
+- **400 Bad Request**:
   - Missing mode in request body
   - Invalid mode value (not one of: auto, heat, cool, off)
 - **500 Internal Server Error**: Database or service error
 
 ### Validation
+
 The API validates that:
+
 - The `mode` field is present in the request body
 - The `mode` value is one of the valid enum values: `auto`, `heat`, `cool`, `off`
 - Invalid modes will return a 400 error with a list of valid options
@@ -68,6 +75,7 @@ curl -X PUT http://localhost:8080/api/thresholds/mode \
 ### Integration
 
 This endpoint integrates with:
+
 - **MQTT Service**: Mode changes are published to Home Assistant
 - **Heating Service**: Physical controllers are updated immediately
 - **Database**: Mode is persisted in SQLite database
@@ -76,6 +84,7 @@ This endpoint integrates with:
 ### UI Integration
 
 The thermostat UI can use this endpoint to provide mode control:
+
 - Dropdown/button group for mode selection
 - Real-time feedback with updated settings response
 - Error handling for invalid modes

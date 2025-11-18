@@ -55,7 +55,7 @@ class ThresholdController {
   async updateMode(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { mode } = req.body;
-      
+
       // Validate that mode is provided
       if (!mode) {
         res.status(400).json({ error: 'Mode is required' });
@@ -65,8 +65,8 @@ class ThresholdController {
       // Validate that mode is a valid enum value
       const validModes = Object.values(Mode);
       if (!validModes.includes(mode)) {
-        res.status(400).json({ 
-          error: `Invalid mode: ${mode}. Valid modes are: ${validModes.join(', ')}` 
+        res.status(400).json({
+          error: `Invalid mode: ${mode}. Valid modes are: ${validModes.join(', ')}`,
         });
         return;
       }
