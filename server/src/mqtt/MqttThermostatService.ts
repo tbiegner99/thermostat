@@ -160,8 +160,8 @@ export default class MqttThermostatService {
       // Temperature topics
       current_temperature_topic: `${this.baseTopic}/temperature/current`,
       current_humidity_topic: `${this.baseTopic}/humidity/current`,
-      current_temperature_template: '{{ json_value.value }}',
-      current_humidity_template: '{{ json_value.value }}',
+      current_temperature_template: '{{ value_json.value }}',
+      current_humidity_template: '{{ value_json.value }}',
 
       // Dual setpoint configuration (heating and cooling thresholds)
       temperature_low_state_topic: `${this.baseTopic}/heating/current`,
