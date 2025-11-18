@@ -120,12 +120,11 @@ class HeatingService {
       return;
     }
 
-    if (
-      (this.mode === Mode.HEATING || this.heatingController.override) &&
-      !this.heatingController.isOn()
-    ) {
-      this.heatingController.turnOn();
-      console.log(`turning on heat due to mode ${this.mode}`);
+    if (this.mode === Mode.HEATING || this.heatingController.override) {
+      if (!this.heatingController.isOn()) {
+        this.heatingController.turnOn();
+        console.log(`turning on heat due to mode ${this.mode}`);
+      }
       return;
     }
     const { margin = 0, heatThreshold } = this.thresholds;
@@ -153,12 +152,11 @@ class HeatingService {
       console.log(`turning off AC due to mode ${this.mode}`);
       return;
     }
-    if (
-      (this.mode === Mode.COOLING || this.coolingController.override) &&
-      !this.coolingController.isOn()
-    ) {
-      this.coolingController.turnOn();
-      console.log(`turning on AC due to mode ${this.mode}`);
+    if (this.mode === Mode.COOLING || this.coolingController.override) {
+      if (!this.coolingController.isOn()) {
+        this.coolingController.turnOn();
+        console.log(`turning on AC due to mode ${this.mode}`);
+      }
       return;
     }
     const { margin = 0, coolingThreshold } = this.thresholds;
