@@ -6,7 +6,7 @@ RUN unzip master.zip
 WORKDIR /pigpio-master
 RUN make install
 RUN apt-get update
-RUN apt-get install -y vim
+RUN apt-get install -y vim sqlite3
 # create gpio permission
 #997 is raspbian gpio group id
 RUN groupadd --gid 997 gpio
@@ -24,9 +24,6 @@ RUN npm run build
 COPY ./dist ./
 
 RUN mkdir -p ./database
-RUN echo -e '{\
-    "margin": 0.6, \n\
-    "heatThreshold": 15,\n\
-    "coolingThreshold": 30\n\
-    }' > ./database/settings.json
+RUN chown -R node:node ./database
+RUN chmod 755 ./database
 CMD rm -rf /var/run/pigpio.pid && npm run start

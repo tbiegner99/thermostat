@@ -31,7 +31,7 @@ async function run(): Promise<void> {
     config = JSON.parse(data);
   }
 
-  setup(config);
+  await setup(config);
   const routes = require('./routes');
 
   let reporters: any = {

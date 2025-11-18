@@ -14,25 +14,25 @@ export const container = awilix.createContainer({
   injectionMode: awilix.InjectionMode.PROXY,
 });
 
-export const setup = (config: Config): void => {
+export const setup = async (config: Config): Promise<void> => {
   const conditionsManager = new CurrentConditionsManager();
 
   conditionsManager.setZoneInfo({
     zoneName: config.zoneName,
     zoneDescription: config.zoneDescription,
   });
-  const fileContents = fs.readFileSync(SETTINGS_FILE, 'utf8');
-  const thresholds = JSON.parse(fileContents);
+  
   const events = new EventEmitter();
   conditionsManager.setEmitter(events);
-  console.log('Starting temperature thresholds', thresholds);
+  
+  console.log('Starting thermostat with SQLite database...');
+  
   container.register({
-    events:awilix.asValue(events)
-  })
+    events: awilix.asValue(events)
+  });
 
   container.loadModules(
     [
-     
       path.resolve(__dirname, './datasource/**/*.js'),
       path.resolve(__dirname, './services/**/*.js'),
       path.resolve(__dirname, './controllers/**/*.js'),
@@ -45,6 +45,12 @@ export const setup = (config: Config): void => {
       },
     }
   );
+  
+  // Get threshold datasource and read initial settings
+  const thresholdDatasource = container.resolve('thresholdDatasource') as any;
+  const thresholds = await thresholdDatasource.readSettings();
+  console.log('Loaded initial temperature thresholds:', thresholds);
+
   const { controllers } = config;
   const controllerFactory = new HeatingControllerFactory();
 
@@ -59,7 +65,7 @@ export const setup = (config: Config): void => {
   let mqttService: MqttThermostatService | null = null;
   if (config.mqtt) {
     console.log('Initializing MQTT service with config:', config.mqtt);
-    mqttService = new MqttThermostatService({config: config.mqtt,emitter:events});
+    mqttService = new MqttThermostatService({ config: config.mqtt, emitter: events });
   }
 
   container.register({

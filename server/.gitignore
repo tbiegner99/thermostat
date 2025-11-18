@@ -1,3 +1,4 @@
 node_modules 
 config.json
 database/settings.json
+database/thermostat.db

@@ -8,7 +8,7 @@ services:
     privileged: true
     volumes:
       - ./server/src:/srv/package/src
-      - ./server/database/settings.json:/srv/package/database/settings.json
+      - ./server/database:/srv/package/database
     devices:
       - /dev/gpiomem:/dev/gpiomem
     logging:
