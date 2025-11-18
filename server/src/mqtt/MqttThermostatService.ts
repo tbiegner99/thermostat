@@ -239,7 +239,7 @@ export default class MqttThermostatService {
       /\//g,
       '_'
     )}_humidity/config`;
-    this.client.publish(tempDiscoveryTopic, JSON.stringify(tempSensorConfig), {
+    this.client.publish(humidityDiscoveryTopic, JSON.stringify(humiditySensorConfig), {
       retain: true,
       qos: 1,
     });
