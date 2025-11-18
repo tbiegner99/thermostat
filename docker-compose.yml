@@ -1,7 +1,8 @@
 version: "3.3"
 services:
   thermostat:
-    image: tbiegner99/thermostat-backend:v1.3.0
+    # image: tbiegner99/thermostat-backend:v1.3.0
+    build: ./server
     platform: linux/arm64
     restart: always
     container_name: thermostat
@@ -35,8 +36,8 @@ services:
       - KAFKA_BROKERS=192.168.2.202:9092
       - KAFKA_INTERVAL=60
       - MQTT_BROKER=tcp://home-assistant:1883
-      - MQTT_TOPIC_temperature=livingRoom/thermostat/temperature/current
-      - MQTT_TOPIC_humidity=livingRoom/thermostat/humidity/current
+      - MQTT_TOPIC_Temperature=livingRoom/thermostat/temperature/current
+      - MQTT_TOPIC_Humidity=livingRoom/thermostat/humidity/current
       - MQTT_USER=tj
       - USE_MQTT=true
       - MQTT_BASE_TOPIC=livingRoom/thermostat

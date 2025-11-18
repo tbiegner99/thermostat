@@ -21,7 +21,6 @@ COPY ./tsconfig.json ./
 RUN npm ci
 COPY ./src ./src
 RUN npm run build
-COPY ./dist ./
 
 RUN mkdir -p ./database
 RUN chown -R node:node ./database
