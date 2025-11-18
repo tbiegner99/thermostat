@@ -228,7 +228,7 @@ export default class MqttThermostatService {
       unique_id: `thermostat_humidity_${this.baseTopic.replace(/\//g, '_')}`,
       device: deviceInfo,
       state_topic: `${this.baseTopic}/humidity/current`,
-      value_template: '{{ value_json.value }}',
+      value_template: '{{ value_json.value | float | round(1) }}',
       availability_topic: `${this.baseTopic}/availability`,
       unit_of_measurement: '%',
       device_class: 'humidity',
