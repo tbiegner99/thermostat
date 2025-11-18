@@ -207,7 +207,6 @@ export default class MqttThermostatService {
       unique_id: `thermostat_temp_${this.baseTopic.replace(/\//g, '_')}`,
       device: deviceInfo,
       state_topic: `${this.baseTopic}/temperature/current`,
-      availability_topic: `${this.baseTopic}/availability`,
       unit_of_measurement: '°C',
       device_class: 'temperature',
       state_class: 'measurement',
@@ -218,6 +217,25 @@ export default class MqttThermostatService {
       '_'
     )}_temp/config`;
     this.client.publish(tempDiscoveryTopic, JSON.stringify(tempSensorConfig), {
+      retain: true,
+      qos: 1,
+    });
+    // Temperature sensor auto-discovery
+    const humiditySensorConfig = {
+      name: 'Current Humidity',
+      unique_id: `thermostat_humidity_${this.baseTopic.replace(/\//g, '_')}`,
+      device: deviceInfo,
+      state_topic: `${this.baseTopic}/humidity/current`,
+      unit_of_measurement: '%',
+      device_class: 'humidity',
+      state_class: 'measurement',
+    };
+
+    const humidityDiscoveryTopic = `homeassistant/sensor/${this.baseTopic.replace(
+      /\//g,
+      '_'
+    )}_humidity/config`;
+    this.client.publish(humidityDiscoveryTopic, JSON.stringify(humiditySensorConfig), {
       retain: true,
       qos: 1,
     });
