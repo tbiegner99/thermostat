@@ -55,7 +55,7 @@ async function run(): Promise<void> {
   const reporterObjects = await ConfigProcessor.getReporters(
     { reporters },
     {
-      currentStatusManager: 'test',
+      currentStatusManager: container.resolve('currentConditionsManager'),
     }
   );
 

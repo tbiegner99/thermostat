@@ -23,7 +23,12 @@ export const setup = async (config: Config): Promise<void> => {
   });
 
   const events = new EventEmitter();
-  conditionsManager.setEmitter(events);
+  events.on(MQTT_EVENTS.TEMPERATURE_CHANGED, (reading) => {
+    console.log('Temperature changed event received:', reading);
+  });
+  events.on(MQTT_EVENTS.HUMIDITY_CHANGED, (reading) => {
+    console.log('Humidity changed event received:', reading);
+  });
 
   console.log('Starting thermostat with SQLite database...');
 
