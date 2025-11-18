@@ -2,7 +2,7 @@
 
 /**
  * Thermostat Settings Manager CLI
- * 
+ *
  * A command-line tool for managing thermostat settings in the SQLite key-value store.
  */
 
@@ -18,7 +18,7 @@ async function main() {
 
   const datasource = new ThresholdDatasource({
     settingsFile: SETTINGS_FILE,
-    fs: fsPromises
+    fs: fsPromises,
   });
 
   try {
@@ -27,7 +27,7 @@ async function main() {
       case 'ls':
         await listSettings(datasource);
         break;
-      
+
       case 'get':
         if (args.length < 2) {
           console.error('Usage: get <key>');
@@ -35,7 +35,7 @@ async function main() {
         }
         await getSetting(datasource, args[1]);
         break;
-      
+
       case 'set':
         if (args.length < 3) {
           console.error('Usage: set <key> <value>');
@@ -43,7 +43,7 @@ async function main() {
         }
         await setSetting(datasource, args[1], args[2]);
         break;
-      
+
       case 'delete':
       case 'del':
         if (args.length < 2) {
@@ -52,15 +52,15 @@ async function main() {
         }
         await deleteSetting(datasource, args[1]);
         break;
-      
+
       case 'reset':
         await resetSettings(datasource);
         break;
-      
+
       case 'export':
         await exportSettings(datasource);
         break;
-      
+
       default:
         showUsage();
     }
@@ -75,9 +75,9 @@ async function main() {
 async function listSettings(datasource: ThresholdDatasource) {
   console.log('📋 Current Thermostat Settings:');
   console.log('================================');
-  
+
   const settings = await datasource.getAllSettings();
-  
+
   for (const [key, value] of Object.entries(settings)) {
     console.log(`${key.padEnd(20)} = ${value} ${getUnit(key)}`);
   }
@@ -95,13 +95,13 @@ async function getSetting(datasource: ThresholdDatasource, key: string) {
 async function setSetting(datasource: ThresholdDatasource, key: string, valueStr: string) {
   // Try to parse as number first, then boolean, then keep as string
   let value: any = valueStr;
-  
+
   if (!isNaN(parseFloat(valueStr)) && isFinite(parseFloat(valueStr))) {
     value = parseFloat(valueStr);
   } else if (valueStr.toLowerCase() === 'true' || valueStr.toLowerCase() === 'false') {
     value = valueStr.toLowerCase() === 'true';
   }
-  
+
   await datasource.setSetting(key, value);
   console.log(`✅ Set ${key} = ${value} ${getUnit(key)}`);
 }
@@ -113,14 +113,14 @@ async function deleteSetting(datasource: ThresholdDatasource, key: string) {
 
 async function resetSettings(datasource: ThresholdDatasource) {
   console.log('⚠️ Resetting to default settings...');
-  
+
   await datasource.update({
     margin: 1.0,
     heatThreshold: 20.0,
     coolingThreshold: 24.0,
-    mode: 'auto' as any
+    mode: 'auto' as any,
   });
-  
+
   console.log('✅ Reset to default settings');
   await listSettings(datasource);
 }

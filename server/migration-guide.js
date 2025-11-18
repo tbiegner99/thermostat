@@ -2,7 +2,7 @@
 
 /**
  * SQLite Migration Guide for Thermostat
- * 
+ *
  * This guide explains how the thermostat has been upgraded from JSON file storage
  * to SQLite database storage for better reliability and performance.
  */
@@ -81,7 +81,7 @@ if (fs.existsSync(settingsPath)) {
   console.log('🟡 Found existing settings.json - automatic migration will occur on next start');
 } else if (fs.existsSync(dbPath)) {
   console.log();
-  console.log('🟢 SQLite database already exists - you\'re all set!');
+  console.log("🟢 SQLite database already exists - you're all set!");
 } else {
   console.log();
   console.log('🆕 Fresh installation - default settings will be created');

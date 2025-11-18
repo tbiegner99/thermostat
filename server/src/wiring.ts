@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import Environment, { Config } from './Environment';
 import HeatingControllerFactory from './services/heatingControllers/HeatingControllerFactory';
-import  MqttThermostatService  from './services/MqttThermostatService';
+import MqttThermostatService from './services/MqttThermostatService';
 import { EventEmitter } from 'events';
 import { CurrentConditionsManager } from '@tbiegner99/reporter';
 import { MQTT_EVENTS } from './constants/MqttEvents';
@@ -21,14 +21,14 @@ export const setup = async (config: Config): Promise<void> => {
     zoneName: config.zoneName,
     zoneDescription: config.zoneDescription,
   });
-  
+
   const events = new EventEmitter();
   conditionsManager.setEmitter(events);
-  
+
   console.log('Starting thermostat with SQLite database...');
-  
+
   container.register({
-    events: awilix.asValue(events)
+    events: awilix.asValue(events),
   });
 
   container.loadModules(
@@ -45,7 +45,7 @@ export const setup = async (config: Config): Promise<void> => {
       },
     }
   );
-  
+
   // Get threshold datasource and read initial settings
   const thresholdDatasource = container.resolve('thresholdDatasource') as any;
   const thresholds = await thresholdDatasource.readSettings();

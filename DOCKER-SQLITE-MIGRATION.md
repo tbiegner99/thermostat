@@ -5,23 +5,28 @@
 The dockerfile has been updated to support the new SQLite database backend:
 
 ### 1. SQLite Installation
+
 - Added `sqlite3` package installation alongside vim
 - This provides the SQLite3 runtime needed for the sqlite3 Node.js package
 
 ### 2. Database Directory Setup
+
 - Removed old JSON file creation (`database/settings.json`)
 - Created proper database directory with correct permissions:
   - `chown -R node:node ./database` - Ensures node user owns the database directory
   - `chmod 755 ./database` - Sets proper read/write permissions
 
 ### 3. Volume Mapping (Already Configured)
+
 The docker-compose.yml already has the correct volume mapping:
+
 ```yaml
 volumes:
   - ./server/database:/srv/package/database
 ```
 
 This ensures:
+
 - SQLite database persists between container restarts
 - Database files are stored on the host filesystem
 - Easy backup and migration of database files
@@ -29,6 +34,7 @@ This ensures:
 ## Database Files
 
 The SQLite database will be created at:
+
 - Container path: `/srv/package/database/thermostat.db`
 - Host path: `./server/database/thermostat.db`
 
@@ -53,11 +59,13 @@ When the container starts with the new SQLite configuration:
 To deploy with the new SQLite support:
 
 1. Build the new Docker image:
+
    ```bash
    docker build -t tbiegner99/thermostat-backend ./server
    ```
 
 2. Update the running container:
+
    ```bash
    docker-compose down
    docker-compose up -d

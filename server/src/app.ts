@@ -1,16 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
 // @ts-ignore - node-getopt doesn't have types
-import  Getopt from 'node-getopt';
+import Getopt from 'node-getopt';
 import Environment from './Environment';
 import { setup, container } from './wiring';
 
-import {
-  Application,
-  ConfigProcessor,
-  getSensorRoutes
-  
-} from '@tbiegner99/temperature-sensor';
+import { Application, ConfigProcessor, getSensorRoutes } from '@tbiegner99/temperature-sensor';
 import { Reading, ReadingTypes, ReporterConfig } from '@tbiegner99/reporter';
 import HeatingService from './services/HeatingService';
 async function run(): Promise<void> {
@@ -43,7 +38,7 @@ async function run(): Promise<void> {
         },
       },
     },
-    currentStatus: {}
+    currentStatus: {},
   };
   reporters = { ...ReporterConfig.loadFromEnvironment(), ...reporters };
   if (config.kafka) {
@@ -56,32 +51,35 @@ async function run(): Promise<void> {
       appName: config.zoneName,
     };
   }
-  const reporterObjects=await ConfigProcessor.getReporters({ reporters }, {
-    currentStatusManager: container.resolve("currentConditionsManager")
- });
+  const reporterObjects = await ConfigProcessor.getReporters(
+    { reporters },
+    {
+      currentStatusManager: container.resolve('currentConditionsManager'),
+    }
+  );
 
- const appConfig = {
+  const appConfig = {
     zoneName: config.zoneName,
     zoneDescription: config.zoneDescription,
     appPort: config.appPort,
     gpioPin: config.temperatureSensorPin,
     interval: config.temperatureReportIntervalInSeconds * 1000,
     contextRoot: config.contextRoot,
-    reporters:reporterObjects,
+    reporters: reporterObjects,
   };
   console.log(appConfig);
   const heatingService: HeatingService = container.resolve('heatingService');
-  const thresholds : any = container.resolve("thresholds")
+  const thresholds: any = container.resolve('thresholds');
   setInterval(heatingService.performCheck, config.checkIntervalInSeconds * 1000);
-  heatingService.setMode(thresholds?.mode || 'auto')
-  heatingService.setHeatingThreshold(thresholds?.heatThreshold)
-  heatingService.setCoolingThreshold(thresholds?.coolingThreshold)
-  const  app =new Application(appConfig).addRoutes(routes).addRoutes(getSensorRoutes({
-    conditionsManager: container.resolve("currentConditionsManager")
-  }))
+  heatingService.setMode(thresholds?.mode || 'auto');
+  heatingService.setHeatingThreshold(thresholds?.heatThreshold);
+  heatingService.setCoolingThreshold(thresholds?.coolingThreshold);
+  const app = new Application(appConfig).addRoutes(routes).addRoutes(
+    getSensorRoutes({
+      conditionsManager: container.resolve('currentConditionsManager'),
+    })
+  );
   await app.start();
-
-  
 }
 
 run().catch(console.error);
