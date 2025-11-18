@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import ThresholdService from '../services/ThresholdService';
+import ThresholdService = require('../services/ThresholdService');
 
 interface HeatingService {
   getSystemStatus(): Promise<any>;

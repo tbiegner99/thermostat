@@ -10,11 +10,9 @@ interface Controller {
   override?: boolean;
 }
 
-
-
 interface CurrentConditionsManager {
   getCurrentTemperature(): { temperature: number };
-  currentTemperature: number
+  currentTemperature: number;
 }
 
 interface Thresholds {
@@ -39,16 +37,16 @@ interface ControllerStatus {
 interface SystemStatus {
   heating: ControllerStatus;
   cooling: ControllerStatus;
-  mode:Mode;
+  mode: Mode;
 }
 
-export default class HeatingService {
+class HeatingService {
   private coolingController?: Controller;
   private heatingController?: Controller;
   private currentConditionsManager: CurrentConditionsManager;
   private thresholds: Thresholds;
   private events?: EventEmitter;
-  private mode :Mode = Mode.AUTO;
+  private mode: Mode = Mode.AUTO;
 
   constructor({
     thresholds,
@@ -74,8 +72,6 @@ export default class HeatingService {
     });
   }
 
-
-
   private getControllerStatus(controller?: Controller): ControllerStatus {
     return {
       on: controller?.isOn() ?? false,
@@ -92,15 +88,13 @@ export default class HeatingService {
   }
 
   setHeatingThreshold(threshold: number): void {
-    console.log(`Updating heating threshold to: ${threshold}`)
+    console.log(`Updating heating threshold to: ${threshold}`);
     this.thresholds.heatThreshold = threshold;
-    
   }
 
   setCoolingThreshold(threshold: number): void {
-    console.log(`Updating cooling threshold to: ${threshold}`)
+    console.log(`Updating cooling threshold to: ${threshold}`);
     this.thresholds.coolingThreshold = threshold;
-   
   }
 
   setMargin(margin: number): void {
@@ -117,7 +111,7 @@ export default class HeatingService {
 
   private handleHeating(): void {
     if (!this.heatingController || this.heatingController.override) {
-      console.log("Skipping heating")
+      console.log('Skipping heating');
       return;
     }
     if ((this.mode === Mode.OFF || this.mode === Mode.COOLING) && this.heatingController.isOn()) {
@@ -125,7 +119,7 @@ export default class HeatingService {
       console.log(`turning off heat due to mode ${this.mode}`);
       return;
     }
-   
+
     if (
       (this.mode === Mode.HEATING || this.heatingController.override) &&
       !this.heatingController.isOn()
@@ -151,7 +145,7 @@ export default class HeatingService {
 
   private handleCooling(): void {
     if (!this.coolingController || this.coolingController.override) {
-      console.log("Skipping heating")
+      console.log('Skipping heating');
       return;
     }
     if ((this.mode === Mode.OFF || this.mode === Mode.HEATING) && this.coolingController.isOn()) {
@@ -223,3 +217,4 @@ export default class HeatingService {
     }
   }
 }
+export = HeatingService;
