@@ -1,11 +1,10 @@
-import EventEmitter from "events";
-import { MQTT_EVENTS } from "../constants/MqttEvents";
-import { Mode } from "../models/mode";
-
+import EventEmitter from 'events';
+import { MQTT_EVENTS } from '../constants/MqttEvents';
+import { Mode } from '../models/mode';
 
 interface ThresholdDatasource {
   readSettings(): Promise<any>;
-  updateMode(mode:Mode): Promise<any>;
+  updateMode(mode: Mode): Promise<any>;
   updateMargin(margin: number): Promise<void>;
   updateHeatThreshold(heatingThreshold: number): Promise<void>;
   updateCoolingThreshold(coolingThreshold: number): Promise<void>;
@@ -15,23 +14,22 @@ interface HeatingService {
   setMargin(margin: number): void;
   setHeatingThreshold(heatingThreshold: number): void;
   setCoolingThreshold(coolingThreshold: number): void;
-  setMode(mode:Mode): void;
-  performCheck():void;
+  setMode(mode: Mode): void;
+  performCheck(): void;
 }
 
 interface ThresholdServiceDependencies {
   thresholdDatasource: ThresholdDatasource;
   heatingService: HeatingService;
-  events: EventEmitter
+  events: EventEmitter;
 }
 
 class ThresholdService {
   private thresholdDao: ThresholdDatasource;
   private heatingService: HeatingService;
-  private events:EventEmitter
+  private events: EventEmitter;
 
-  constructor({ thresholdDatasource, heatingService,events }: ThresholdServiceDependencies) {
-    
+  constructor({ thresholdDatasource, heatingService, events }: ThresholdServiceDependencies) {
     this.thresholdDao = thresholdDatasource;
     this.heatingService = heatingService;
     this.events = events;
@@ -39,21 +37,21 @@ class ThresholdService {
   }
   private setupMqttHandlers(): void {
     if (!this.events) return;
-    console.log("threshold service setting up events")
-       // Handle mode changes from Home Assistant
-       this.events.on(MQTT_EVENTS.SET_MODE, (mode: string) => {
-        console.log(`MQTT: Setting mode to ${mode}`);
-        this.setMode(mode);
-      });
+    console.log('threshold service setting up events');
+    // Handle mode changes from Home Assistant
+    this.events.on(MQTT_EVENTS.SET_MODE, (mode: string) => {
+      console.log(`MQTT: Setting mode to ${mode}`);
+      this.setMode(mode);
+    });
     // Handle dual setpoint commands
     this.events.on(MQTT_EVENTS.SET_HEATING_THRESHOLD, (temperature: number) => {
       console.log(`MQTT: Setting heating threshold to ${temperature}°C`);
-      this.updateHeatingThreshold(temperature)
+      this.updateHeatingThreshold(temperature);
     });
 
     this.events.on(MQTT_EVENTS.SET_COOLING_THRESHOLD, (temperature: number) => {
       console.log(`MQTT: Setting cooling threshold to ${temperature}°C`);
-      this.updateCoolingThreshold(temperature)
+      this.updateCoolingThreshold(temperature);
     });
 
     // Handle manual override commands
@@ -77,7 +75,6 @@ class ThresholdService {
       console.log(`MQTT: Setting cooling override to ${enable}`);
       this.setMode(Mode.COOLING);
     });
-
   }
 
   getThresholds(): Promise<any> {

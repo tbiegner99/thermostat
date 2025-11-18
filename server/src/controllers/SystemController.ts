@@ -16,7 +16,7 @@ interface SystemControllerDependencies {
 
 class SystemController {
   private heatingService: HeatingService;
-  private thresholdService:ThresholdService;
+  private thresholdService: ThresholdService;
 
   constructor({ heatingService, thresholdService }: SystemControllerDependencies) {
     this.heatingService = heatingService;
