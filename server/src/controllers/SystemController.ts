@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import ThresholdService from '../services/ThresholdService';
 
 interface HeatingService {
   getSystemStatus(): Promise<any>;
@@ -10,13 +11,16 @@ interface HeatingService {
 
 interface SystemControllerDependencies {
   heatingService: HeatingService;
+  thresholdService: ThresholdService;
 }
 
 class SystemController {
   private heatingService: HeatingService;
+  private thresholdService:ThresholdService;
 
-  constructor({ heatingService }: SystemControllerDependencies) {
+  constructor({ heatingService, thresholdService }: SystemControllerDependencies) {
     this.heatingService = heatingService;
+    this.thresholdService = thresholdService;
     this.getSystemStatus = this.getSystemStatus.bind(this);
     this.overrideHeating = this.overrideHeating.bind(this);
     this.disableHeatingOverride = this.disableHeatingOverride.bind(this);
@@ -27,7 +31,11 @@ class SystemController {
   async getSystemStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const systemStatus = await this.heatingService.getSystemStatus();
-      res.status(200).send(systemStatus);
+      const thresholds = await this.thresholdService.getThresholds();
+      res.status(200).send({
+        ...systemStatus,
+        thresholds,
+      });
     } catch (error) {
       next(error);
     }

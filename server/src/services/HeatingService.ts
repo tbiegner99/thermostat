@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 
 import { MQTT_EVENTS } from '../constants/MqttEvents';
+import { Mode } from '../models/mode';
 
 interface Controller {
   isOn(): boolean;
@@ -9,15 +10,11 @@ interface Controller {
   override?: boolean;
 }
 
-export enum Mode {
-  HEATING = 'heating',
-  COOLING = 'cooling',
-  AUTO = 'auto',
-  OFF = 'off',
-}
+
 
 interface CurrentConditionsManager {
   getCurrentTemperature(): { temperature: number };
+  currentTemperature: number
 }
 
 interface Thresholds {
@@ -42,35 +39,30 @@ interface ControllerStatus {
 interface SystemStatus {
   heating: ControllerStatus;
   cooling: ControllerStatus;
+  mode:Mode;
 }
 
-export class HeatingService {
+export default class HeatingService {
   private coolingController?: Controller;
   private heatingController?: Controller;
   private currentConditionsManager: CurrentConditionsManager;
   private thresholds: Thresholds;
   private events?: EventEmitter;
-  public mode: Mode = Mode.AUTO;
+  private mode :Mode = Mode.AUTO;
 
   constructor({
     thresholds,
     currentConditionsManager,
     coolingController,
     heatingController,
-    events,
   }: HeatingServiceDependencies) {
     this.coolingController = coolingController;
     this.heatingController = heatingController;
     this.currentConditionsManager = currentConditionsManager;
     this.thresholds = thresholds;
-    this.events = events;
 
     this.performCheck = this.performCheck.bind(this);
 
-    // Setup MQTT handlers if MQTT service is available
-    if (this.events) {
-      this.setupMqttHandlers();
-    }
     process.on('exit', () => {
       if (this.coolingController) {
         this.coolingController.turnOff();
@@ -82,64 +74,7 @@ export class HeatingService {
     });
   }
 
-  private setupMqttHandlers(): void {
-    if (!this.events) return;
 
-    console.log('Setting up MQTT handlers for HeatingService');
-
-    // Handle mode changes from Home Assistant
-    this.events.on(MQTT_EVENTS.SET_MODE, (mode: string) => {
-      console.log(`MQTT: Setting mode to ${mode}`);
-      this.setMode(mode as Mode);
-    });
-
-    // Handle single temperature commands (fallback)
-    this.events.on(MQTT_EVENTS.SET_TEMPERATURE, (temperature: number) => {
-      console.log(`MQTT: Setting temperature to ${temperature}°C`);
-      if (this.mode === Mode.HEATING) {
-        this.setHeatingThreshold(temperature);
-      } else if (this.mode === Mode.COOLING) {
-        this.setCoolingThreshold(temperature);
-      }
-    });
-
-    // Handle dual setpoint commands
-    this.events.on(MQTT_EVENTS.SET_HEATING_THRESHOLD, (temperature: number) => {
-      console.log(`MQTT: Setting heating threshold to ${temperature}°C`);
-      this.thresholds.heatThreshold = temperature;
-    });
-
-    this.events.on(MQTT_EVENTS.SET_COOLING_THRESHOLD, (temperature: number) => {
-      console.log(`MQTT: Setting cooling threshold to ${temperature}°C`);
-      this.thresholds.coolingThreshold = temperature;
-    });
-
-    // Handle manual override commands
-    this.events.on(MQTT_EVENTS.SET_HEATING, (enable: boolean) => {
-      console.log(`MQTT: Setting heating override to ${enable}`);
-      this.mode = Mode.HEATING;
-      this.performCheck();
-    });
-
-    // Handle manual override commands
-    this.events.on(MQTT_EVENTS.TURN_ON, (enable: boolean) => {
-      console.log(`MQTT: Setting heating override to ${enable}`);
-      this.mode = Mode.AUTO;
-      this.performCheck();
-    });
-
-    this.events.on(MQTT_EVENTS.TURN_OFF, (enable: boolean) => {
-      console.log(`MQTT: Setting heating override to ${enable}`);
-      this.mode = Mode.OFF;
-      this.performCheck();
-    });
-
-    this.events.on(MQTT_EVENTS.SET_COOLING, (enable: boolean) => {
-      console.log(`MQTT: Setting cooling override to ${enable}`);
-      this.mode = Mode.COOLING;
-      this.performCheck();
-    });
-  }
 
   private getControllerStatus(controller?: Controller): ControllerStatus {
     return {
@@ -152,21 +87,20 @@ export class HeatingService {
     return {
       heating: this.getControllerStatus(this.heatingController),
       cooling: this.getControllerStatus(this.coolingController),
+      mode: this.mode,
     };
   }
 
   setHeatingThreshold(threshold: number): void {
+    console.log(`Updating heating threshold to: ${threshold}`)
     this.thresholds.heatThreshold = threshold;
-    this.events?.emit(MQTT_EVENTS.HEATING_THRESHOLD_UPDATED, {
-      value: threshold,
-    });
+    
   }
 
   setCoolingThreshold(threshold: number): void {
+    console.log(`Updating cooling threshold to: ${threshold}`)
     this.thresholds.coolingThreshold = threshold;
-    this.events?.emit(MQTT_EVENTS.COOLING_THRESHOLD_UPDATED, {
-      value: threshold,
-    });
+   
   }
 
   setMargin(margin: number): void {
@@ -183,6 +117,7 @@ export class HeatingService {
 
   private handleHeating(): void {
     if (!this.heatingController || this.heatingController.override) {
+      console.log("Skipping heating")
       return;
     }
     if ((this.mode === Mode.OFF || this.mode === Mode.COOLING) && this.heatingController.isOn()) {
@@ -190,6 +125,7 @@ export class HeatingService {
       console.log(`turning off heat due to mode ${this.mode}`);
       return;
     }
+   
     if (
       (this.mode === Mode.HEATING || this.heatingController.override) &&
       !this.heatingController.isOn()
@@ -201,7 +137,7 @@ export class HeatingService {
     const { margin = 0, heatThreshold } = this.thresholds;
     if (heatThreshold === undefined) return;
 
-    const { temperature } = this.currentConditionsManager.getCurrentTemperature();
+    const temperature = this.currentConditionsManager.currentTemperature;
     if (this.heatingController.isOn()) {
       if (temperature > heatThreshold + margin) {
         console.log('turning off heat');
@@ -215,9 +151,10 @@ export class HeatingService {
 
   private handleCooling(): void {
     if (!this.coolingController || this.coolingController.override) {
+      console.log("Skipping heating")
       return;
     }
-    if ((this.mode === Mode.OFF || this.mode === Mode.COOLING) && this.coolingController.isOn()) {
+    if ((this.mode === Mode.OFF || this.mode === Mode.HEATING) && this.coolingController.isOn()) {
       this.coolingController.turnOff();
       console.log(`turning off AC due to mode ${this.mode}`);
       return;
@@ -233,7 +170,7 @@ export class HeatingService {
     const { margin = 0, coolingThreshold } = this.thresholds;
     if (coolingThreshold === undefined) return;
 
-    const { temperature } = this.currentConditionsManager.getCurrentTemperature();
+    const temperature = this.currentConditionsManager.currentTemperature;
     if (this.coolingController.isOn()) {
       if (temperature < coolingThreshold - margin) {
         console.log('turning off AC');

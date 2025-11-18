@@ -24,7 +24,9 @@ export const MQTT_EVENTS = {
   HEATING_THRESHOLD_UPDATED: 'heatingThresholdUpdated',
   COOLING_THRESHOLD_UPDATED: 'coolingThresholdUpdated',
   MARGIN_UPDATED: 'marginUpdated',
-  TEMPERATURE_CHANGED: 'temperatureChanged',
+  TEMPERATURE_CHANGED: 'temperatureUpdate',
+  HUMIDITY_CHANGED: 'humidityUpdate',
+  MODE_UPDATED: 'modeUpdated'
 } as const;
 
 // Type for event names to ensure type safety

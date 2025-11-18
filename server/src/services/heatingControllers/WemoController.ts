@@ -28,10 +28,10 @@ class WemoController extends HeatingController {
     <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
         <s:Body>
             <ns:SetBinaryState xmlns:ns="urn:Belkin:service:basicevent:1">
-                <BinaryState>${Number(state)}</BinaryState>
-                <Duration>0</Duration>
-                <EndAction>0</EndAction>
                 <UDN>0</UDN>
+                <EndAction>0</EndAction>
+                <Duration>0</Duration>
+                <BinaryState>${Number(state)}</BinaryState>
             </ns:SetBinaryState>
         </s:Body>
     </s:Envelope>
@@ -41,7 +41,7 @@ class WemoController extends HeatingController {
   private async executeSoapRequest(request: string): Promise<any> {
     const headers = {
       'Content-Type': 'text/xml',
-      SOAPAction: '"urn:Belkin:service:basicevent1:1#SetBinaryState"',
+      SOAPAction: '"urn:Belkin:service:basicevent:1#SetBinaryState"',
     };
     const url = `http://${this.host}:${this.port}/upnp/control/basicevent1`;
     const response = await axios.post(url, request, {

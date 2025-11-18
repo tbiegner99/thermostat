@@ -1,0 +1,29 @@
+export ZONE_NAME="Back Room"
+export ZONE_DESCRIPTION="BACK Room"
+export CONTEXT_ROOT=/api
+export APP_PORT=8080
+export TEMPERATURE_SENSOR_PIN=2
+export REPORT_INTERVAL_SECONDS=15
+export CHECK_INTERVAL_SECONDS=5
+export HEATING_CONTROLLER_TYPE=gpio
+export HEATING_CONTROLLER_PIN=4
+export HEATING_CONTROLLER_INVERTED_LOGIC=false
+export COOLING_CONTROLLER_TYPE=wemo
+export COOLING_CONTROLLER_HOST=192.168.2.203
+export COOLING_CONTROLLER_PORT=49153
+export USE_KAFKA=true
+export KAFKA_TOPIC=temperature-readings
+export KAFKA_BROKERS=192.168.2.202:9092
+export KAFKA_INTERVAL=60
+export USE_MQTT=true
+export ENABLE_MQTT_REPORTER=true
+export MQTT_TOPIC_humidity=backRoom/thermostat/humidity/current
+export MQTT_TOPIC_temperature=backRoom/thermostat/temperature/current
+export MQTT_BROKER=tcp://home-assistant:1883
+export MQTT_USER=tj
+export APP_NAME="Back Room Thermostat"
+export MQTT_PASSWORD=Letsgomets99!
+export MQTT_BASE_TOPIC=backRoom/thermostat
+export MQTT_REPORTING_INTERVAL=30000
+
+/home/tj/.nvm/versions/node/v18.20.5/bin/node ./dist/app.js

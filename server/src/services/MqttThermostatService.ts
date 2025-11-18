@@ -10,16 +10,17 @@ interface MqttConfig {
   baseTopic: string;
 }
 
-export class MqttThermostatService extends EventEmitter {
+export default class MqttThermostatService {
   private client: mqtt.MqttClient;
   private config: MqttConfig;
   private baseTopic: string;
+  private emitter:EventEmitter
 
-  constructor(config: MqttConfig) {
-    super();
+  constructor({config,emitter}: {config: MqttConfig, emitter: EventEmitter}) {
     this.config = config;
     this.baseTopic = config.baseTopic;
-
+    this.emitter = emitter;
+    this.setUpEmitter(this.emitter)
     // Connect to MQTT broker
     this.client = mqtt.connect(config.brokerUrl, {
       username: config.username,
@@ -36,6 +37,20 @@ export class MqttThermostatService extends EventEmitter {
 
     this.setupMqttHandlers();
     this.subscribeToCommands();
+  }
+
+  private setUpEmitter(emitter:EventEmitter) {
+    if(!this.emitter) return;
+    emitter.on(MQTT_EVENTS.COOLING_THRESHOLD_UPDATED, (arg)=> {
+      this.publishCoolingThreshold(arg.value)
+    })
+    emitter.on(MQTT_EVENTS.HEATING_THRESHOLD_UPDATED, (arg)=> {
+      this.publishHeatingThreshold(arg.value)
+    })
+    emitter.on(MQTT_EVENTS.MODE_UPDATED, (arg)=> {
+      this.publishMode(arg)
+    })
+
   }
 
   private setupMqttHandlers(): void {
@@ -61,10 +76,8 @@ export class MqttThermostatService extends EventEmitter {
   private subscribeToCommands(): void {
     const commandTopics = [
       `${this.baseTopic}/mode/set`,
-      `${this.baseTopic}/temperature/heating/set`, // Dual setpoint - heating threshold
-      `${this.baseTopic}/temperature/cooling/set`, // Dual setpoint - cooling threshold
-      `${this.baseTopic}/heating/set`,
-      `${this.baseTopic}/cooling/set`,
+      `${this.baseTopic}/heating/set`, // Dual setpoint - heating threshold
+      `${this.baseTopic}/cooling/set`, // Dual setpoint - cooling threshold
     ];
 
     commandTopics.forEach((topic) => {
@@ -78,27 +91,21 @@ export class MqttThermostatService extends EventEmitter {
 
       if (topic.endsWith('/mode/set')) {
         // Home Assistant sends: "heat", "cool", "auto", "off" (lowercase)
-        this.emit(MQTT_EVENTS.SET_MODE, message.toLowerCase());
-      } else if (topic.endsWith('/temperature/heating/set')) {
-        // Dual setpoint - heating threshold
-        const temperature = parseFloat(message);
-        if (!isNaN(temperature)) {
-          this.emit(MQTT_EVENTS.SET_HEATING_THRESHOLD, temperature);
-        }
-      } else if (topic.endsWith('/temperature/cooling/set')) {
-        // Dual setpoint - cooling threshold
-        const temperature = parseFloat(message);
-        if (!isNaN(temperature)) {
-          this.emit(MQTT_EVENTS.SET_COOLING_THRESHOLD, temperature);
-        }
+        this.emitter.emit(MQTT_EVENTS.SET_MODE, message.toLowerCase());
       } else if (topic.endsWith('/heating/set')) {
-        const enable =
-          message.toLowerCase() === 'on' || message === '1' || message.toLowerCase() === 'true';
-        this.emit(MQTT_EVENTS.SET_HEATING, enable);
+        // Dual setpoint - heating threshold
+        console.log(`Received command to update heating threshold to ${message}`)
+        const temperature = parseFloat(message);
+        if (!isNaN(temperature)) {
+          this.emitter.emit(MQTT_EVENTS.SET_HEATING_THRESHOLD, temperature);
+        }
       } else if (topic.endsWith('/cooling/set')) {
-        const enable =
-          message.toLowerCase() === 'on' || message === '1' || message.toLowerCase() === 'true';
-        this.emit(MQTT_EVENTS.SET_COOLING, enable);
+        // Dual setpoint - cooling threshold
+        console.log(`Received command to update cooling threshold to ${message}`)
+        const temperature = parseFloat(message);
+        if (!isNaN(temperature)) {
+          this.emitter.emit(MQTT_EVENTS.SET_COOLING_THRESHOLD, temperature);
+        }
       }
     } catch (error) {
       console.error('Error handling MQTT command:', error);
@@ -110,24 +117,21 @@ export class MqttThermostatService extends EventEmitter {
     this.publishTopic('temperature/current', temperature.toFixed(1), true);
   }
 
-  public publishTargetTemperature(temperature: number): void {
-    // Publish as plain number string with 1 decimal place (HA format)
-    this.publishTopic('temperature/target', temperature.toFixed(1), true);
-  }
+
 
   public publishMode(mode: string): void {
     // Publish as lowercase string (HA requirement)
-    this.publishTopic('mode', mode.toLowerCase(), true);
+    this.publishTopic('mode/current', mode.toLowerCase(), true);
   }
 
   public publishHeatingThreshold(temperature: number): void {
     // Publish heating threshold for dual setpoint
-    this.publishTopic('temperature/heating/target', temperature.toFixed(1), true);
+    this.publishTopic('heating/current', temperature.toFixed(1), true);
   }
 
   public publishCoolingThreshold(temperature: number): void {
     // Publish cooling threshold for dual setpoint
-    this.publishTopic('temperature/cooling/target', temperature.toFixed(1), true);
+    this.publishTopic('cooling/current', temperature.toFixed(1), true);
   }
 
   public publishThresholds(thresholds: any): void {
@@ -136,6 +140,7 @@ export class MqttThermostatService extends EventEmitter {
 
   private publishTopic(subtopic: string, payload: string, retain = false): void {
     const topic = `${this.baseTopic}/${subtopic}`;
+    console.debug(`Publishing ${payload} to topic ${topic}`)
     this.client.publish(topic, payload, { retain, qos: 1 });
   }
 
@@ -155,6 +160,7 @@ export class MqttThermostatService extends EventEmitter {
 
       // Temperature topics
       current_temperature_topic: `${this.baseTopic}/temperature/current`,
+      current_humidity_topic: `${this.baseTopic}/humidity/current`,
 
       // Dual setpoint configuration (heating and cooling thresholds)
       temperature_low_state_topic: `${this.baseTopic}/temperature/heating/target`,
@@ -163,7 +169,7 @@ export class MqttThermostatService extends EventEmitter {
       temperature_high_command_topic: `${this.baseTopic}/temperature/cooling/set`,
 
       // Mode topics
-      mode_state_topic: `${this.baseTopic}/mode`,
+      mode_state_topic: `${this.baseTopic}/mode/current`,
       mode_command_topic: `${this.baseTopic}/mode/set`,
 
       // Action topic (what system is doing)

@@ -12,17 +12,18 @@
   "author": "TJ Biegner",
   "license": "ISC",
   "dependencies": {
-    "@tbiegner99/reporter": "^1.0.1",
-    "@tbiegner99/temperature-sensor": "^2.2.3",
+    "@tbiegner99/reporter": "^1.0.3",
     "awilix": "^4.2.6",
     "axios": "^0.22.0",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "node-getopt": "^0.3.2",
     "rpio": "^2.2.0",
+    "sqlite3": "^5.1.7",
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
+    "@tbiegner99/temperature-sensor": "^2.2.6",
     "@types/express": "^4.17.21",
     "@types/node": "^20.10.0",
     "db-migrate": "^0.11.11",

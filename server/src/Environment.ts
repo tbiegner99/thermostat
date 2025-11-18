@@ -78,8 +78,8 @@ class Environment {
     }
     return {
       mqtt: {
-        brokerUrl: process.env.MQTT_BROKER_URL || 'mqtt://localhost:1883',
-        username: process.env.MQTT_USERNAME,
+        brokerUrl: process.env.MQTT_BROKER || 'mqtt://localhost:1883',
+        username: process.env.MQTT_USER,
         password: process.env.MQTT_PASSWORD,
         clientId: process.env.MQTT_CLIENT_ID,
         baseTopic:

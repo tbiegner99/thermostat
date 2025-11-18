@@ -1,0 +1,46 @@
+version: "3.3"
+services:
+  thermostat:
+    # 
+    build: .
+    platform: linux/arm64
+    restart: always
+    container_name: thermostat
+    privileged: true
+    volumes:
+      - ./dist:/srv/package/dist
+      - ./database/settings.json:/srv/package/database/settings.json
+    devices:
+      - /dev/gpiomem:/dev/gpiomem
+    logging:
+      options:
+        max-size: "20m"
+        max-file: "10"
+    environment:
+      - "ZONE_NAME=Living Room"
+      - "ZONE_DESCRIPTION=Living Room"
+      - CONTEXT_ROOT=/api
+      - APP_PORT=8080
+      - TEMPERATURE_SENSOR_PIN=2
+      - REPORT_INTERVAL_SECONDS=15
+      - CHECK_INTERVAL_SECONDS=5
+      - HEATING_CONTROLLER_TYPE=gpio
+      - HEATING_CONTROLLER_PIN=4
+      - HEATING_CONTROLLER_INVERTED_LOGIC=false
+      - COOLING_CONTROLLER_TYPE=wemo
+      - COOLING_CONTROLLER_HOST=ac
+      - COOLING_CONTROLLER_PORT=49153
+      - USE_KAFKA=true
+      - KAFKA_TOPIC=temperature-readings
+      - KAFKA_BROKERS=192.168.2.202:9092
+      - KAFKA_INTERVAL=60
+      - USE_MQTT=true
+      - MQTT_BROKER_URL=tcp://home-assistant:1883
+      - MQTT_USERNAME=tj
+      - MQTT_PASSWORD=Letsgomets99!
+      - MQTT_BASE_TOPIC=backRoom/thermostats
+    ports:
+      - 8080:8080
+    # command: node
+    # tty: true
+ 
