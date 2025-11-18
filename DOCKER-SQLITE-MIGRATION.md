@@ -16,7 +16,18 @@ The dockerfile has been updated to support the new SQLite database backend:
   - `chown -R node:node ./database` - Ensures node user owns the database directory
   - `chmod 755 ./database` - Sets proper read/write permissions
 
-### 3. Volume Mapping (Already Configured)
+### 3. Database Initialization
+
+- Creates SQLite database schema with settings table during container build
+- Adds timestamp trigger for tracking setting updates
+- Inserts default values:
+  - `heatThreshold`: 20.0°C
+  - `coolingThreshold`: 24.0°C  
+  - `margin`: 1.0°C
+  - `mode`: "auto"
+- Uses `INSERT OR REPLACE` to handle existing databases gracefully
+
+### 4. Volume Mapping (Already Configured)
 
 The docker-compose.yml already has the correct volume mapping:
 
@@ -42,9 +53,10 @@ The SQLite database will be created at:
 
 When the container starts with the new SQLite configuration:
 
-1. **Automatic Migration**: The application will automatically migrate any existing `database.json` file to SQLite on first run
-2. **Default Values**: If no existing configuration exists, default settings will be created
-3. **Persistence**: All settings changes will be stored in the SQLite database
+1. **Pre-initialized Database**: The SQLite database is created during the Docker build process with default settings
+2. **Automatic Migration**: If an existing `database.json` file exists on the host volume, the application will migrate it and merge with defaults
+3. **Volume Persistence**: Database persists between container updates via volume mapping
+4. **Ready to Use**: Container starts with sensible defaults immediately available
 
 ## Benefits
 

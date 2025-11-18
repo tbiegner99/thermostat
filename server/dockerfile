@@ -26,4 +26,14 @@ COPY ./dist ./
 RUN mkdir -p ./database
 RUN chown -R node:node ./database
 RUN chmod 755 ./database
+
+# Initialize SQLite database with default settings
+RUN sqlite3 ./database/thermostat.db "CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL, type TEXT NOT NULL DEFAULT 'string', created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP);"
+RUN sqlite3 ./database/thermostat.db "CREATE TRIGGER IF NOT EXISTS update_settings_timestamp AFTER UPDATE ON settings BEGIN UPDATE settings SET updated_at = CURRENT_TIMESTAMP WHERE key = NEW.key; END;"
+RUN sqlite3 ./database/thermostat.db "INSERT OR REPLACE INTO settings (key, value, type) VALUES ('heatThreshold', '20.0', 'number');"
+RUN sqlite3 ./database/thermostat.db "INSERT OR REPLACE INTO settings (key, value, type) VALUES ('coolingThreshold', '24.0', 'number');"
+RUN sqlite3 ./database/thermostat.db "INSERT OR REPLACE INTO settings (key, value, type) VALUES ('margin', '1.0', 'number');"
+RUN sqlite3 ./database/thermostat.db "INSERT OR REPLACE INTO settings (key, value, type) VALUES ('mode', 'auto', 'string');"
+RUN chown -R node:node ./database
+
 CMD rm -rf /var/run/pigpio.pid && npm run start
