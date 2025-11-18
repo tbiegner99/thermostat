@@ -20,7 +20,6 @@ export default class MqttThermostatService {
     this.config = config;
     this.baseTopic = config.baseTopic;
     this.emitter = emitter;
-    console.log('Setting up MQTT emitter', emitter, config);
     this.setUpEmitter(this.emitter);
     // Connect to MQTT broker
     this.client = mqtt.connect(config.brokerUrl, {
@@ -161,6 +160,8 @@ export default class MqttThermostatService {
       // Temperature topics
       current_temperature_topic: `${this.baseTopic}/temperature/current`,
       current_humidity_topic: `${this.baseTopic}/humidity/current`,
+      current_temperature_template: '{{ json_value.value }}',
+      current_humidity_template: '{{ json_value.value }}',
 
       // Dual setpoint configuration (heating and cooling thresholds)
       temperature_low_state_topic: `${this.baseTopic}/heating/current`,
