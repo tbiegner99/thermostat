@@ -22,7 +22,7 @@ The dockerfile has been updated to support the new SQLite database backend:
 - Adds timestamp trigger for tracking setting updates
 - Inserts default values:
   - `heatThreshold`: 20.0°C
-  - `coolingThreshold`: 24.0°C  
+  - `coolingThreshold`: 24.0°C
   - `margin`: 1.0°C
   - `mode`: "auto"
 - Uses `INSERT OR REPLACE` to handle existing databases gracefully
