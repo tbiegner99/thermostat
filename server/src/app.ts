@@ -8,6 +8,7 @@ import { setup, container } from './wiring';
 import { Application, ConfigProcessor, getSensorRoutes } from '@tbiegner99/temperature-sensor';
 import { Reading, ReadingTypes, ReporterConfig } from '@tbiegner99/reporter';
 import HeatingService from './services/HeatingService';
+import ThresholdService from './services/ThresholdService';
 async function run(): Promise<void> {
   const getopt = new Getopt([
     ['c', 'config=', 'location of the configuration file'],
@@ -54,7 +55,7 @@ async function run(): Promise<void> {
   const reporterObjects = await ConfigProcessor.getReporters(
     { reporters },
     {
-      currentStatusManager: container.resolve('currentConditionsManager'),
+      currentStatusManager: 'test',
     }
   );
 
@@ -69,12 +70,13 @@ async function run(): Promise<void> {
   };
   console.log(appConfig);
   console.log('Reporters', JSON.stringify(reporters, null, 2));
+  const thresholdService: ThresholdService = container.resolve('thresholdService');
   const heatingService: HeatingService = container.resolve('heatingService');
   const thresholds: any = container.resolve('thresholds');
   setInterval(heatingService.performCheck, config.checkIntervalInSeconds * 1000);
-  heatingService.setMode(thresholds?.mode || 'auto');
-  heatingService.setHeatingThreshold(thresholds?.heatThreshold);
-  heatingService.setCoolingThreshold(thresholds?.coolingThreshold);
+  thresholdService.setMode(thresholds?.mode || 'auto');
+  thresholdService.updateHeatingThreshold(thresholds?.heatThreshold);
+  thresholdService.updateCoolingThreshold(thresholds?.coolingThreshold);
   const app = new Application(appConfig).addRoutes(routes).addRoutes(
     getSensorRoutes({
       conditionsManager: container.resolve('currentConditionsManager'),
