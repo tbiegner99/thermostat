@@ -24,7 +24,7 @@ interface ThresholdServiceDependencies {
   events: EventEmitter;
 }
 
-class ThresholdService {
+export default class ThresholdService {
   private thresholdDao: ThresholdDatasource;
   private heatingService: HeatingService;
   private events: EventEmitter;
@@ -108,5 +108,3 @@ class ThresholdService {
     });
   }
 }
-
-export = ThresholdService;
