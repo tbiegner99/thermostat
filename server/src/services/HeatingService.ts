@@ -40,7 +40,7 @@ interface SystemStatus {
   mode: Mode;
 }
 
-export class HeatingService {
+class HeatingService {
   private coolingController?: Controller;
   private heatingController?: Controller;
   private currentConditionsManager: CurrentConditionsManager;
