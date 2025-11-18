@@ -33,6 +33,7 @@ class ThresholdService {
     this.thresholdDao = thresholdDatasource;
     this.heatingService = heatingService;
     this.events = events;
+    console.log('Threshold service initialized with events:', events);
     this.setupMqttHandlers();
   }
   private setupMqttHandlers(): void {
