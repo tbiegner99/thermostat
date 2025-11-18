@@ -153,7 +153,7 @@ export default class MqttThermostatService {
 
     // Climate entity auto-discovery with dual setpoints
     const climateConfig = {
-      name: 'Thermostat',
+      name: `${process.env.ZONE_NAME} Thermostat`,
       unique_id: `thermostat_climate_${this.baseTopic.replace(/\//g, '_')}`,
       device: deviceInfo,
 
