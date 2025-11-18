@@ -20,6 +20,7 @@ export default class MqttThermostatService {
     this.config = config;
     this.baseTopic = config.baseTopic;
     this.emitter = emitter;
+    console.log('Setting up MQTT emitter', emitter, config);
     this.setUpEmitter(this.emitter);
     // Connect to MQTT broker
     this.client = mqtt.connect(config.brokerUrl, {
@@ -40,7 +41,9 @@ export default class MqttThermostatService {
   }
 
   private setUpEmitter(emitter: EventEmitter) {
-    if (!this.emitter) return;
+    if (!emitter) {
+      return;
+    }
     emitter.on(MQTT_EVENTS.COOLING_THRESHOLD_UPDATED, (arg) => {
       this.publishCoolingThreshold(arg.value);
     });
