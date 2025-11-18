@@ -163,10 +163,10 @@ export default class MqttThermostatService {
       current_humidity_topic: `${this.baseTopic}/humidity/current`,
 
       // Dual setpoint configuration (heating and cooling thresholds)
-      temperature_low_state_topic: `${this.baseTopic}/temperature/heating/target`,
-      temperature_high_state_topic: `${this.baseTopic}/temperature/cooling/target`,
-      temperature_low_command_topic: `${this.baseTopic}/temperature/heating/set`,
-      temperature_high_command_topic: `${this.baseTopic}/temperature/cooling/set`,
+      temperature_low_state_topic: `${this.baseTopic}/heating/current`,
+      temperature_high_state_topic: `${this.baseTopic}/cooling/current`,
+      temperature_low_command_topic: `${this.baseTopic}/heating/set`,
+      temperature_high_command_topic: `${this.baseTopic}/cooling/set`,
 
       // Mode topics
       mode_state_topic: `${this.baseTopic}/mode/current`,
