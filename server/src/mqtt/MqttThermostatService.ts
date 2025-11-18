@@ -14,13 +14,13 @@ export default class MqttThermostatService {
   private client: mqtt.MqttClient;
   private config: MqttConfig;
   private baseTopic: string;
-  private emitter:EventEmitter
+  private emitter: EventEmitter;
 
-  constructor({config,emitter}: {config: MqttConfig, emitter: EventEmitter}) {
+  constructor({ config, emitter }: { config: MqttConfig; emitter: EventEmitter }) {
     this.config = config;
     this.baseTopic = config.baseTopic;
     this.emitter = emitter;
-    this.setUpEmitter(this.emitter)
+    this.setUpEmitter(this.emitter);
     // Connect to MQTT broker
     this.client = mqtt.connect(config.brokerUrl, {
       username: config.username,
@@ -39,18 +39,17 @@ export default class MqttThermostatService {
     this.subscribeToCommands();
   }
 
-  private setUpEmitter(emitter:EventEmitter) {
-    if(!this.emitter) return;
-    emitter.on(MQTT_EVENTS.COOLING_THRESHOLD_UPDATED, (arg)=> {
-      this.publishCoolingThreshold(arg.value)
-    })
-    emitter.on(MQTT_EVENTS.HEATING_THRESHOLD_UPDATED, (arg)=> {
-      this.publishHeatingThreshold(arg.value)
-    })
-    emitter.on(MQTT_EVENTS.MODE_UPDATED, (arg)=> {
-      this.publishMode(arg)
-    })
-
+  private setUpEmitter(emitter: EventEmitter) {
+    if (!this.emitter) return;
+    emitter.on(MQTT_EVENTS.COOLING_THRESHOLD_UPDATED, (arg) => {
+      this.publishCoolingThreshold(arg.value);
+    });
+    emitter.on(MQTT_EVENTS.HEATING_THRESHOLD_UPDATED, (arg) => {
+      this.publishHeatingThreshold(arg.value);
+    });
+    emitter.on(MQTT_EVENTS.MODE_UPDATED, (arg) => {
+      this.publishMode(arg);
+    });
   }
 
   private setupMqttHandlers(): void {
@@ -94,14 +93,14 @@ export default class MqttThermostatService {
         this.emitter.emit(MQTT_EVENTS.SET_MODE, message.toLowerCase());
       } else if (topic.endsWith('/heating/set')) {
         // Dual setpoint - heating threshold
-        console.log(`Received command to update heating threshold to ${message}`)
+        console.log(`Received command to update heating threshold to ${message}`);
         const temperature = parseFloat(message);
         if (!isNaN(temperature)) {
           this.emitter.emit(MQTT_EVENTS.SET_HEATING_THRESHOLD, temperature);
         }
       } else if (topic.endsWith('/cooling/set')) {
         // Dual setpoint - cooling threshold
-        console.log(`Received command to update cooling threshold to ${message}`)
+        console.log(`Received command to update cooling threshold to ${message}`);
         const temperature = parseFloat(message);
         if (!isNaN(temperature)) {
           this.emitter.emit(MQTT_EVENTS.SET_COOLING_THRESHOLD, temperature);
@@ -116,8 +115,6 @@ export default class MqttThermostatService {
     // Publish as plain number string with 1 decimal place (HA format)
     this.publishTopic('temperature/current', temperature.toFixed(1), true);
   }
-
-
 
   public publishMode(mode: string): void {
     // Publish as lowercase string (HA requirement)
@@ -140,14 +137,14 @@ export default class MqttThermostatService {
 
   private publishTopic(subtopic: string, payload: string, retain = false): void {
     const topic = `${this.baseTopic}/${subtopic}`;
-    console.debug(`Publishing ${payload} to topic ${topic}`)
+    console.debug(`Publishing ${payload} to topic ${topic}`);
     this.client.publish(topic, payload, { retain, qos: 1 });
   }
 
   private publishAutoDiscoveryConfig(): void {
     const deviceInfo = {
       identifiers: [`thermostat_${this.baseTopic.replace(/\//g, '_')}`],
-      name: 'Custom Thermostat',
+      name: process.env.APP_NAME,
       model: 'DIY Thermostat v1.0',
       manufacturer: 'Custom',
     };
@@ -193,7 +190,10 @@ export default class MqttThermostatService {
       // JSON attributes for additional state
       json_attributes_topic: `${this.baseTopic}/state`,
     };
-
+    console.log(
+      'Publishing Home Assistant auto-discovery config',
+      JSON.stringify(climateConfig, null, 2)
+    );
     const discoveryTopic = `homeassistant/climate/${this.baseTopic.replace(/\//g, '_')}/config`;
     this.client.publish(discoveryTopic, JSON.stringify(climateConfig), { retain: true, qos: 1 });
 

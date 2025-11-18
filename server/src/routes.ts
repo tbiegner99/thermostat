@@ -12,6 +12,7 @@ thresholdRouter.get('/', thresholdController.getThresholds);
 thresholdRouter.put('/margin', thresholdController.updateMargin);
 thresholdRouter.put('/heating', thresholdController.updateHeatThreshold);
 thresholdRouter.put('/cooling', thresholdController.updateCoolingThreshold);
+thresholdRouter.put('/mode', thresholdController.updateMode);
 
 const heatingRouter = express.Router();
 heatingRouter.get('/', systemController.getSystemStatus);

@@ -1,9 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
+import { Mode } from '../models/mode';
 
 interface ThresholdService {
   updateHeatingThreshold(threshold: number): Promise<void>;
   updateCoolingThreshold(threshold: number): Promise<void>;
   updateMargin(margin: number): Promise<void>;
+  setMode(mode: string): Promise<void>;
   getThresholds(): Promise<any>;
 }
 
@@ -19,6 +21,7 @@ class ThresholdController {
     this.updateHeatThreshold = this.updateHeatThreshold.bind(this);
     this.updateCoolingThreshold = this.updateCoolingThreshold.bind(this);
     this.updateMargin = this.updateMargin.bind(this);
+    this.updateMode = this.updateMode.bind(this);
     this.getThresholds = this.getThresholds.bind(this);
   }
 
@@ -43,6 +46,32 @@ class ThresholdController {
   async updateMargin(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       await this.thresholdService.updateMargin(req.body.margin);
+      this.getThresholds(req, res, next);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateMode(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { mode } = req.body;
+      
+      // Validate that mode is provided
+      if (!mode) {
+        res.status(400).json({ error: 'Mode is required' });
+        return;
+      }
+
+      // Validate that mode is a valid enum value
+      const validModes = Object.values(Mode);
+      if (!validModes.includes(mode)) {
+        res.status(400).json({ 
+          error: `Invalid mode: ${mode}. Valid modes are: ${validModes.join(', ')}` 
+        });
+        return;
+      }
+
+      await this.thresholdService.setMode(mode);
       this.getThresholds(req, res, next);
     } catch (error) {
       next(error);

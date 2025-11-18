@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import Environment, { Config } from './Environment';
 import HeatingControllerFactory from './services/heatingControllers/HeatingControllerFactory';
-import MqttThermostatService from './services/MqttThermostatService';
+import MqttThermostatService from './mqtt/MqttThermostatService';
 import { EventEmitter } from 'events';
 import { CurrentConditionsManager } from '@tbiegner99/reporter';
 import { MQTT_EVENTS } from './constants/MqttEvents';

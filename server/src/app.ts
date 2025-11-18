@@ -67,7 +67,7 @@ async function run(): Promise<void> {
     contextRoot: config.contextRoot,
     reporters: reporterObjects,
   };
-  console.log(appConfig);
+  console.log(JSON.stringify(appConfig, null, 2));
   const heatingService: HeatingService = container.resolve('heatingService');
   const thresholds: any = container.resolve('thresholds');
   setInterval(heatingService.performCheck, config.checkIntervalInSeconds * 1000);
