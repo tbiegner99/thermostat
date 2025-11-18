@@ -29,6 +29,8 @@ export const setup = async (config: Config): Promise<void> => {
 
   container.register({
     events: awilix.asValue(events),
+    settingsFile: awilix.asValue(SETTINGS_FILE),
+    fs: awilix.asValue(fs.promises),
   });
 
   container.loadModules(
@@ -69,9 +71,9 @@ export const setup = async (config: Config): Promise<void> => {
   }
 
   container.register({
-    fs: awilix.asValue(fs.promises),
+    
     currentConditionsManager: awilix.asValue(conditionsManager),
-    settingsFile: awilix.asValue(SETTINGS_FILE),
+    
     thresholds: awilix.asValue(thresholds),
     heatingController: awilix.asValue(heatingController),
     coolingController: awilix.asValue(coolingController),

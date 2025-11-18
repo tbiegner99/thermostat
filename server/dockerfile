@@ -35,5 +35,5 @@ RUN sqlite3 ./database/thermostat.db "INSERT OR REPLACE INTO settings (key, valu
 RUN sqlite3 ./database/thermostat.db "INSERT OR REPLACE INTO settings (key, value, type) VALUES ('margin', '1.0', 'number');"
 RUN sqlite3 ./database/thermostat.db "INSERT OR REPLACE INTO settings (key, value, type) VALUES ('mode', 'auto', 'string');"
 RUN chown -R node:node ./database
-
+RUN echo "{}" > "./database/settings.json"
 CMD rm -rf /var/run/pigpio.pid && npm run start
