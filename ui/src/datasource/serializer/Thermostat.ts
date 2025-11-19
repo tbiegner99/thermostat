@@ -1,5 +1,18 @@
+import { C } from 'react-router/dist/production/fog-of-war-CbNQuoo8';
 import { Temperature } from '../../util/constants/Units';
-const mapUnit = (tempUnit: string) => {
+import {
+  RawSystemStatusResponse,
+  RawCurrentConditionsResponse,
+  RawThresholdsResponse,
+  RawSystemComponentData,
+  SystemComponent,
+  SystemStatus,
+  CurrentConditions,
+  Thresholds,
+  UpdateThresholdRequest,
+} from '../models';
+
+const mapUnit = (tempUnit: string): string => {
   switch (tempUnit) {
     case 'F':
       return Temperature.FARENHEIT;
@@ -12,14 +25,14 @@ const mapUnit = (tempUnit: string) => {
   }
 };
 
-const format = (number: number) => {
+const format = (number: number): string | number => {
   if (number) {
     return number.toFixed(1);
   }
   return number;
 };
 
-const fromSystemComponent = (data: any) => {
+const fromSystemComponent = (data: RawSystemComponentData | null): SystemComponent | null => {
   if (!data) return null;
   return {
     on: data.on,
@@ -27,12 +40,15 @@ const fromSystemComponent = (data: any) => {
   };
 };
 
-const fromSystemStatusResponse = (response: any) => ({
+const fromSystemStatusResponse = (response: RawSystemStatusResponse): SystemStatus => ({
   heating: fromSystemComponent(response.data.heating),
   cooling: fromSystemComponent(response.data.cooling),
+  mode: response.data.thresholds.mode,
 });
 
-const fromCurrentConditionsResponse = (response: any) => {
+const fromCurrentConditionsResponse = (
+  response: RawCurrentConditionsResponse
+): CurrentConditions => {
   const { humidity, temperature, zoneName, zoneDescription } = response.data;
   return {
     zoneName,
@@ -48,7 +64,7 @@ const fromCurrentConditionsResponse = (response: any) => {
   };
 };
 
-const fromThresholdsResponse = (response: any) => {
+const fromThresholdsResponse = (response: RawThresholdsResponse): Thresholds => {
   const { heatThreshold, coolingThreshold } = response.data;
   return {
     heatingThreshold: {
@@ -62,12 +78,16 @@ const fromThresholdsResponse = (response: any) => {
   };
 };
 
-const toUpdateCoolingThresholdRequest = (threshold: any) => ({
+const toUpdateCoolingThresholdRequest = (threshold: number): UpdateThresholdRequest => ({
   coolingThreshold: threshold,
 });
 
-const toUpdateHeatingThresholdRequest = (threshold: any) => ({
+const toUpdateHeatingThresholdRequest = (threshold: number): UpdateThresholdRequest => ({
   heatThreshold: threshold,
+});
+
+const toSetModeRequest = (mode: string) => ({
+  mode,
 });
 
 export default {
@@ -76,4 +96,5 @@ export default {
   fromThresholdsResponse,
   toUpdateCoolingThresholdRequest,
   toUpdateHeatingThresholdRequest,
+  toSetModeRequest,
 };

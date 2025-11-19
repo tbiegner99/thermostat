@@ -53,6 +53,11 @@ class ThermostatDatasource {
   disableCoolingOverride() {
     return this.controlOverride('cooling', false);
   }
+
+  setMode(mode: string) {
+    const request = serializer.toSetModeRequest(mode);
+    return httpClient.put(`${THRESHOLDS_URL}/mode`, request);
+  }
 }
 
 export default new ThermostatDatasource();

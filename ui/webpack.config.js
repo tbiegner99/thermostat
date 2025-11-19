@@ -25,7 +25,7 @@ module.exports = {
     proxy: [
       {
         context: ['/api'],
-        target: process.env.API_TARGET || 'http://localhost:8080',
+        target: process.env.API_TARGET || 'http://heating.home',
       },
     ],
   },
