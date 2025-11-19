@@ -44,6 +44,16 @@ const fromSystemStatusResponse = (response: RawSystemStatusResponse): SystemStat
   heating: fromSystemComponent(response.data.heating),
   cooling: fromSystemComponent(response.data.cooling),
   mode: response.data.thresholds.mode,
+  thresholds: {
+    heatingThreshold: {
+      value: response.data.thresholds.heatThreshold,
+      unit: Temperature.CELCIUS,
+    },
+    coolingThreshold: {
+      value: response.data.thresholds.coolingThreshold,
+      unit: Temperature.CELCIUS,
+    },
+  },
 });
 
 const fromCurrentConditionsResponse = (

@@ -21,6 +21,8 @@ export interface RawSystemStatusResponse {
     cooling: RawSystemComponentData;
     thresholds: {
       mode: ThermostatMode;
+      heatThreshold: number;
+      coolingThreshold: number;
     };
   };
 }
@@ -61,6 +63,7 @@ export interface SystemStatus {
   heating: SystemComponent | null;
   cooling: SystemComponent | null;
   mode: ThermostatMode;
+  thresholds: Thresholds;
 }
 
 export interface CurrentConditions {

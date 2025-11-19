@@ -1,6 +1,7 @@
 import BaseActionCreator from './BaseActionCreator';
 import ThermostatActions from '../actions/thermostat';
 import ThermostatDatasource from '../datasource/Thermostat';
+
 class ThermostatActionCreator extends BaseActionCreator {
   async getCurrentConditions() {
     const currentConditions = await ThermostatDatasource.getCurrentConditions();
@@ -31,6 +32,7 @@ class ThermostatActionCreator extends BaseActionCreator {
   async getSystemStatus() {
     const status = await ThermostatDatasource.getSystemStatus();
     this.dispatch(this.createAction(ThermostatActions.SYSTEM_STATUS_LOADED, status));
+    this.dispatch(this.createAction(ThermostatActions.THRESHOLDS_LOADED, status.thresholds));
     return status;
   }
 
